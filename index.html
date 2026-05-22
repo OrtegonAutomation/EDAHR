@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IA10 · Hojas de Ruta SAP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intro.js@7.2.0/minified/introjs.min.css">
+  <style>
+/* ─── TOKENS ─────────────────────────────────────────── */
+:root {
+  --navy:      oklch(22% 0.04 252);
+  --navy-2:    oklch(27% 0.05 252);
+  --navy-3:    oklch(34% 0.05 252);
+  --amber:     oklch(74% 0.17 68);
+  --amber-hi:  oklch(80% 0.14 72);
+  --amber-lo:  oklch(95.5% 0.04 72);
+  --bg:        oklch(97% 0.008 252);
+  --bg-2:      oklch(93.5% 0.012 252);
+  --surface:   oklch(99.5% 0.003 252);
+  --border:    oklch(89% 0.016 252);
+  --border-2:  oklch(82% 0.025 252);
+  --text:      oklch(17% 0.025 252);
+  --text-2:    oklch(38% 0.03 252);
+  --text-3:    oklch(58% 0.025 252);
+  --red:       oklch(56% 0.22 28);
+  --red-lo:    oklch(96.5% 0.03 28);
+  --green:     oklch(60% 0.19 148);
+  --green-lo:  oklch(96% 0.04 148);
+  --blue:      oklch(56% 0.2 265);
+  --blue-lo:   oklch(96% 0.04 265);
+  --purple:    oklch(58% 0.19 295);
+  --purple-lo: oklch(96% 0.04 295);
+  --orange:    oklch(68% 0.18 58);
+  --orange-lo: oklch(96% 0.05 58);
+  --teal:      oklch(62% 0.18 190);
+  --teal-lo:   oklch(96% 0.04 190);
+  --r-sm:6px; --r:10px; --r-lg:16px;
+  --sh-sm:0 1px 3px oklch(0% 0 0/7%),0 1px 2px oklch(0% 0 0/5%);
+  --sh:0 4px 14px oklch(0% 0 0/9%),0 1px 4px oklch(0% 0 0/5%);
+  --sh-lg:0 18px 48px oklch(0% 0 0/13%),0 4px 14px oklch(0% 0 0/7%);
+  --eox:cubic-bezier(0.16,1,0.3,1);
+  --eoq:cubic-bezier(0.25,1,0.5,1);
+}
+
+/* ─── RESET ───────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',system-ui,sans-serif;font-size:13px;line-height:1.5;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none}
+input,select{font-family:inherit}
+mark{background:oklch(92% 0.12 72);border-radius:2px;padding:0 2px;color:inherit}
+code{font-family:'DM Mono',monospace;background:var(--bg-2);padding:1px 5px;border-radius:3px;font-size:.9em}
+
+/* ─── KEYFRAMES ───────────────────────────────────────── */
+@keyframes fadeUp  {from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fadeIn  {from{opacity:0}to{opacity:1}}
+@keyframes slideIn {from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+@keyframes scaleIn {from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse   {0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes float   {0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes gearCW  {to{transform:rotate(360deg)}}
+@keyframes gearCCW {to{transform:rotate(-360deg)}}
+@keyframes rowIn   {from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+@keyframes borderPulse{0%,100%{border-color:var(--amber)}50%{border-color:var(--amber-hi)}}
+@keyframes docFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-8px) rotate(-1deg)}}
+@keyframes spin    {to{transform:rotate(360deg)}}
+
+/* ─── HEADER ──────────────────────────────────────────── */
+#header{
+  background:var(--navy);
+  padding:0 clamp(16px,4vw,40px);
+  display:flex;align-items:stretch;gap:0;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 20px oklch(0% 0 0/28%);
+  overflow:hidden;
+}
+#header::before{
+  content:'';position:absolute;inset:0;
+  background-image:repeating-linear-gradient(90deg,oklch(28% 0.04 252) 0,oklch(28% 0.04 252) 1px,transparent 1px,transparent 48px);
+  opacity:.35;pointer-events:none;
+}
+#header-brand{display:flex;align-items:center;gap:14px;padding:14px 0;flex:1;position:relative}
+#hlogo{width:46px;height:46px;flex-shrink:0}
+.htitle{color:var(--surface)}
+.htitle h1{font-size:clamp(14px,2vw,18px);font-weight:700;letter-spacing:-.4px;line-height:1.2}
+.htitle p{font-size:11px;color:oklch(68% 0.025 252);margin-top:2px}
+.htitle-row{display:flex;align-items:center;gap:10px}
+#tour-header-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  background:oklch(30% 0.05 252);color:var(--surface);
+  border:1px solid oklch(40% 0.06 252);
+  border-radius:var(--r-sm);padding:5px 9px;
+  font-size:11px;font-weight:600;
+  transition:opacity .15s,transform .1s;
+}
+#tour-header-btn:hover{opacity:.9}
+#tour-header-btn:active{transform:scale(.98)}
+#header-stats{display:flex;align-items:center;border-left:1px solid oklch(32% 0.04 252);margin-left:24px;position:relative}
+.hstat{padding:0 18px;border-right:1px solid oklch(32% 0.04 252);text-align:center}
+.hstat:last-child{border-right:none}
+.hstat-v{font-size:17px;font-weight:700;color:var(--amber);line-height:1;font-feature-settings:'tnum';display:block}
+.hstat-l{font-size:10px;color:oklch(58% 0.025 252);text-transform:uppercase;letter-spacing:.7px;margin-top:3px;display:block}
+
+/* ─── LAYOUT ──────────────────────────────────────────── */
+#app{max-width:1440px;margin:0 auto;padding:clamp(16px,3vw,32px) clamp(12px,3vw,32px);display:flex;flex-direction:column;gap:18px}
+
+/* ─── UPLOAD ──────────────────────────────────────────── */
+#drop-area{
+  position:relative;border:2px dashed var(--border-2);border-radius:var(--r-lg);
+  background:var(--surface);padding:38px 24px 32px;text-align:center;cursor:pointer;
+  transition:border-color .25s,background .25s,box-shadow .25s;
+  animation:fadeUp .5s var(--eox) both;
+}
+#drop-area:hover{border-color:var(--amber);background:var(--amber-lo);box-shadow:var(--sh)}
+#drop-area.drag-over{border-color:var(--amber);background:var(--amber-lo);animation:borderPulse 1s ease-in-out infinite;box-shadow:var(--sh)}
+#file-input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-title{font-size:16px;font-weight:600;color:var(--text);margin-top:12px}
+.drop-sub{font-size:12px;color:var(--text-3);margin-top:5px}
+.drop-hint{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--text-3);background:var(--bg-2);border-radius:20px;padding:4px 13px;margin-top:12px}
+#file-list{display:flex;flex-direction:column;gap:8px}
+
+/* Intro.js theming */
+.introjs-tooltip{border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh-lg)}
+.introjs-tooltip-title{font-family:'DM Sans',sans-serif;font-weight:700}
+.introjs-button{border-radius:6px!important;font-family:'DM Sans',sans-serif}
+.introjs-button.introjs-nextbutton{background:var(--navy)!important;color:var(--surface)!important;border:none!important;text-shadow:none!important}
+
+/* ─── FILE CARDS ──────────────────────────────────────── */
+.fcard{
+  background:var(--surface);border-radius:var(--r);border:1px solid var(--border);
+  padding:12px 16px;display:flex;align-items:center;gap:14px;
+  box-shadow:var(--sh-sm);animation:slideIn .35s var(--eox) both;
+  transition:box-shadow .2s,border-color .2s;
+}
+.fcard:hover{box-shadow:var(--sh)}
+.fcard-ico{width:38px;height:38px;flex-shrink:0;background:var(--bg-2);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center}
+.fcard-info{flex:1;min-width:0}
+.fcard-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fcard-meta{font-size:11px;color:var(--text-3);margin-top:2px}
+.fcard-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600}
+.chip-n{background:var(--bg-2);color:var(--text-2)}
+.chip-p{background:var(--amber-lo);color:oklch(36% 0.1 68)}
+.chip-m{background:var(--purple-lo);color:oklch(34% 0.15 295)}
+.chip-f{background:var(--green-lo);color:oklch(31% 0.15 148)}
+.chip-w{background:var(--orange-lo);color:oklch(36% 0.1 58)}
+.btn-rm{background:transparent;color:var(--text-3);padding:6px 8px;border-radius:var(--r-sm);font-size:14px;line-height:1;transition:background .15s,color .15s;flex-shrink:0}
+.btn-rm:hover{background:var(--red-lo);color:var(--red)}
+
+/* ─── CONTROLS ────────────────────────────────────────── */
+#cbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;animation:fadeUp .4s var(--eox) both}
+#cbar.hidden{display:none}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:600;letter-spacing:.1px;transition:opacity .15s,transform .1s,box-shadow .15s}
+.btn:hover{opacity:.87;box-shadow:var(--sh-sm)}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--navy);color:var(--surface)}
+.btn-s{background:var(--green);color:var(--surface)}
+.btn-g{background:var(--bg-2);color:var(--text-2);border:1px solid var(--border)}
+.dvdr{width:1px;height:24px;background:var(--border);margin:0 4px}
+
+/* ─── TABS ────────────────────────────────────────────── */
+#twrap.hidden{display:none}
+#twrap{animation:fadeUp .4s .05s var(--eox) both}
+#tabs{display:flex;gap:2px;border-bottom:2px solid var(--border);overflow-x:auto;scrollbar-width:thin;padding-bottom:0}
+#tabs::-webkit-scrollbar{height:3px}
+#tabs::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:2px}
+.tab{padding:9px 18px;border:1px solid transparent;border-bottom:none;border-radius:var(--r-sm) var(--r-sm) 0 0;background:transparent;color:var(--text-3);font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;position:relative;bottom:-2px;display:flex;align-items:center;gap:7px;transition:color .2s,background .2s}
+.tab:hover{color:var(--text-2);background:var(--bg-2)}
+.tab.on{color:var(--navy);background:var(--surface);border-color:var(--border);border-bottom-color:var(--surface)}
+.tab-n{background:var(--bg-2);color:var(--text-3);border-radius:20px;padding:1px 7px;font-size:10px;font-weight:700}
+.tab.on .tab-n{background:var(--amber-lo);color:oklch(36% 0.1 68)}
+
+/* ─── TABLE SECTION ───────────────────────────────────── */
+#tsec{background:var(--surface);border-radius:0 0 var(--r-lg) var(--r-lg);border:1px solid var(--border);border-top:none;overflow:hidden;box-shadow:var(--sh);animation:scaleIn .35s var(--eox) both}
+#tsec.hidden{display:none}
+
+/* Filter row */
+#frow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 16px;border-bottom:1px solid var(--border);background:var(--bg)}
+.srch{position:relative;display:flex;align-items:center}
+.srch svg{position:absolute;left:9px;color:var(--text-3);pointer-events:none}
+#sinput{width:260px;padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--surface);font-size:12px;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
+#sinput:focus{border-color:var(--navy-3);box-shadow:0 0 0 3px oklch(22% 0.04 252/10%)}
+.fsel{padding:7px 10px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--surface);font-size:12px;font-family:inherit;color:var(--text);outline:none;cursor:pointer}
+#rowcnt{margin-left:auto;font-size:11px;color:var(--text-3);white-space:nowrap}
+
+/* Table */
+#twrap2{overflow:auto;max-height:58vh}
+#dtable{width:100%;border-collapse:collapse;font-size:12px}
+#dtable thead th{
+  position:sticky;top:0;z-index:5;background:var(--navy);color:var(--surface);
+  padding:9px 12px;text-align:left;font-weight:600;font-size:11px;letter-spacing:.3px;white-space:nowrap;
+  cursor:pointer;user-select:none;border-right:1px solid oklch(30% 0.04 252);transition:background .15s;
+}
+#dtable thead th:hover{background:var(--navy-2)}
+#dtable thead th:last-child{border-right:none}
+.ths{margin-left:3px;opacity:.4;font-size:9px}
+#dtable tbody tr{border-bottom:1px solid var(--bg-2);transition:background .1s}
+#dtable tbody tr:hover{background:var(--bg)}
+#dtable tbody td{padding:7px 12px;vertical-align:middle;border-right:1px solid var(--bg-2);max-width:320px}
+#dtable tbody td:last-child{border-right:none}
+.cc{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-2)}
+.bold-cc{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--navy);background:var(--amber-lo);border:1px solid var(--amber-hi);border-radius:4px;padding:2px 6px;white-space:nowrap;display:inline-block}
+.dc{color:var(--text);line-height:1.4}
+.text-wrap{white-space:normal;word-break:break-word;line-height:1.4;max-width:280px}
+.dc-dim{color:var(--text-3);font-style:italic;font-size:11px}
+.freq-badge{display:inline-flex;align-items:center;gap:3px;background:var(--green-lo);color:oklch(31% 0.15 148);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;white-space:nowrap}
+.mat-badge{display:inline-flex;align-items:center;gap:3px;background:var(--purple-lo);color:oklch(34% 0.15 295);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;white-space:nowrap}
+.num-cell{text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:var(--text-2)}
+.cnt-badge{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;background:var(--bg-2);border-radius:10px;font-size:10px;font-weight:700;color:var(--text-2);padding:0 5px}
+.cnt-badge.has-mats{background:var(--purple-lo);color:oklch(34% 0.15 295)}
+.cnt-badge.has-steps{background:var(--teal-lo);color:oklch(34% 0.15 190)}
+.cnt-badge.has-freqs{background:var(--green-lo);color:oklch(31% 0.15 148)}
+.freq-chips{display:flex;flex-wrap:wrap;gap:4px}
+.et-cell{font-size:11px;color:var(--text-2);font-style:italic;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qty-cell{font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--text)}
+.unit-cell{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-3)}
+
+/* Pagination */
+#pag{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);background:var(--bg);flex-wrap:wrap;gap:8px}
+#pag.hidden{display:none}
+.pi{font-size:11px;color:var(--text-3)}
+.pc{display:flex;align-items:center;gap:4px}
+.pb{padding:5px 11px;border-radius:var(--r-sm);background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--text-2);transition:background .15s,border-color .15s,color .15s}
+.pb:hover:not(:disabled){background:var(--navy);color:var(--surface);border-color:var(--navy)}
+.pb:disabled{opacity:.4;cursor:default}
+.pb.on{background:var(--navy);color:var(--surface);border-color:var(--navy)}
+
+/* Empty state */
+#empty{display:flex;flex-direction:column;align-items:center;padding:64px 24px;color:var(--text-3);animation:fadeIn .4s ease both}
+#empty p{font-size:14px;margin-top:16px}
+#empty span{font-size:12px;margin-top:4px}
+
+/* ─── WARNINGS ────────────────────────────────────────── */
+#wsec.hidden{display:none}
+#wsec{animation:fadeUp .35s var(--eox) both}
+#wdet{border:1px solid oklch(84% 0.08 58);border-radius:var(--r);background:var(--orange-lo);overflow:hidden}
+#wdet summary{padding:11px 16px;font-weight:600;font-size:12px;color:oklch(34% 0.1 58);cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+#wdet summary::-webkit-details-marker{display:none}
+#wlist{max-height:180px;overflow-y:auto;padding:8px 16px 12px;font-size:11px;color:oklch(36% 0.09 58);font-family:'DM Mono',monospace;border-top:1px solid oklch(84% 0.08 58)}
+.wi{padding:4px 0;border-bottom:1px solid oklch(90% 0.06 58)}
+.wi:last-child{border-bottom:none}
+
+/* ─── LOADING ─────────────────────────────────────────── */
+#loading{position:fixed;inset:0;z-index:9999;background:oklch(10% 0.03 252/70%);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center}
+#loading.hidden{display:none}
+.l-box{background:oklch(16% 0.04 252/96%);border:1px solid oklch(30% 0.04 252);border-radius:var(--r-lg);padding:32px 40px;display:flex;flex-direction:column;align-items:center;gap:14px;min-width:320px;max-width:90vw;box-shadow:var(--sh-lg)}
+#l-title{color:var(--surface);font-size:14px;font-weight:600}
+#l-fname{color:oklch(68% 0.025 252);font-size:11px;font-family:'DM Mono',monospace;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;height:14px}
+#l-counter{color:var(--amber);font-size:12px;font-weight:700;letter-spacing:.2px}
+#l-bar-wrap{width:280px;height:7px;background:oklch(28% 0.04 252);border-radius:4px;overflow:hidden}
+#l-bar{height:100%;background:linear-gradient(90deg,var(--amber),oklch(80% 0.14 56));border-radius:4px;width:0%;transition:width .35s var(--eoq)}
+#l-rows{color:oklch(55% 0.025 252);font-size:11px}
+
+/* ─── TOAST ───────────────────────────────────────────── */
+#toast{position:fixed;bottom:24px;right:24px;z-index:9998;background:var(--navy);color:var(--surface);padding:10px 18px;border-radius:var(--r);font-size:13px;font-weight:500;box-shadow:var(--sh-lg);display:flex;align-items:center;gap:8px;transition:opacity .3s var(--eox),transform .3s var(--eox);max-width:340px}
+#toast.hidden{opacity:0;transform:translateY(10px);pointer-events:none}
+#toast.tw{background:oklch(34% 0.08 68)}
+#toast.te{background:oklch(34% 0.16 28)}
+
+@media(max-width:640px){
+  #header-stats{display:none}
+  #sinput{width:100%}
+  .tab{padding:8px 11px}
+  .hstat{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+  </style>
+</head>
+<body>
+
+<!-- ─── LOADING ─────────────────────────────────────── -->
+<div id="loading" class="hidden">
+  <div class="l-box">
+    <svg width="56" height="56" viewBox="0 0 76 76" fill="none">
+      <g style="transform-origin:38px 38px;animation:gearCW 2.2s linear infinite">
+        <path stroke="var(--amber)" stroke-width="2.5" fill="none"
+          d="M38 10L40.8 16.8L48.2 14.2L49 21.8L56.5 22.8L54.8 30.2L61.5 33.8L57.8 40.5L61.5 47.2L54.8 50.8L56.5 58.2L49 59.2L48.2 66.8L40.8 64.2L38 71L35.2 64.2L27.8 66.8L27 59.2L19.5 58.2L21.2 50.8L14.5 47.2L18.2 40.5L14.5 33.8L21.2 30.2L19.5 22.8L27 21.8L27.8 14.2L35.2 16.8Z"/>
+      </g>
+      <circle cx="38" cy="38" r="16" stroke="var(--blue)" stroke-width="2" stroke-dasharray="7 4" fill="none"
+        style="transform-origin:38px 38px;animation:gearCCW 3s linear infinite"/>
+      <circle cx="38" cy="38" r="7" fill="var(--amber)"/>
+      <circle cx="38" cy="38" r="3" fill="oklch(16% 0.04 252)"/>
+    </svg>
+    <span id="l-title">Analizando archivos IA10…</span>
+    <span id="l-fname"></span>
+    <div id="l-bar-wrap"><div id="l-bar"></div></div>
+    <span id="l-counter"></span>
+    <span id="l-rows"></span>
+  </div>
+</div>
+
+<!-- ─── TOAST ───────────────────────────────────────── -->
+<div id="toast" class="hidden">
+  <svg id="tico" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></svg>
+  <span id="tmsg"></span>
+</div>
+
+<!-- ─── HEADER ───────────────────────────────────────── -->
+<header id="header">
+  <div id="header-brand">
+    <!-- IA10 Logo: Wrench + Document + Gear -->
+    <svg id="hlogo" viewBox="0 0 46 46" fill="none">
+      <!-- Document base -->
+      <rect x="7" y="6" width="24" height="30" rx="2" fill="oklch(30% 0.05 252)"/>
+      <!-- Folded corner -->
+      <path d="M24 6L31 13H24Z" fill="oklch(24% 0.04 252)"/>
+      <!-- Document lines -->
+      <rect x="11" y="17" width="12" height="2" rx="1" fill="oklch(74% 0.17 68)" opacity=".9"/>
+      <rect x="11" y="21" width="16" height="1.5" rx=".75" fill="oklch(50% 0.04 252)"/>
+      <rect x="11" y="24" width="14" height="1.5" rx=".75" fill="oklch(50% 0.04 252)"/>
+      <rect x="11" y="27" width="15" height="1.5" rx=".75" fill="oklch(50% 0.04 252)"/>
+      <rect x="11" y="30" width="11" height="1.5" rx=".75" fill="oklch(50% 0.04 252)"/>
+      <!-- Subtask lines (indented) -->
+      <rect x="13" y="21" width="1.5" height="12" rx=".75" fill="oklch(60% 0.1 68)" opacity=".6"/>
+      <!-- Gear overlay -->
+      <g style="transform:translate(28px,28px);transform-origin:9px 9px;animation:gearCW 6s linear infinite">
+        <circle cx="9" cy="9" r="8.5" fill="oklch(22% 0.04 252)" stroke="oklch(34% 0.05 252)" stroke-width="1"/>
+        <circle cx="9" cy="9" r="5.5" fill="none" stroke="var(--amber)" stroke-width="2.2"/>
+        <circle cx="9" cy="9" r="2.2" fill="var(--amber)"/>
+        <!-- Gear teeth -->
+        <path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.6 3.6l1.4 1.4M11 11l1.4 1.4M3.6 14.4l1.4-1.4M11 5l1.4-1.4" stroke="var(--amber)" stroke-width="1.4" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <div class="htitle">
+      <div class="htitle-row">
+        <h1>IA10 · Hojas de Ruta SAP</h1>
+        <button id="tour-header-btn" type="button" title="Iniciar tour guiado">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13V3l12 5-12 5z"/></svg>
+          Tour guiado
+        </button>
+      </div>
+      <p>Transacción IA10 · Parser, estructurador y exportador de planes de mantenimiento</p>
+    </div>
+  </div>
+  <div id="header-stats">
+    <div class="hstat"><span class="hstat-v" id="hs-plans">0</span><span class="hstat-l">Planes</span></div>
+    <div class="hstat"><span class="hstat-v" id="hs-ops">0</span><span class="hstat-l">Operaciones</span></div>
+    <div class="hstat"><span class="hstat-v" id="hs-pkgs">0</span><span class="hstat-l">Paquetes</span></div>
+    <div class="hstat"><span class="hstat-v" id="hs-mats">0</span><span class="hstat-l">Materiales</span></div>
+  </div>
+</header>
+
+<!-- ─── APP ─────────────────────────────────────────── -->
+<main id="app">
+
+  <!-- Upload zone -->
+  <div>
+    <div id="drop-area">
+      <input type="file" id="file-input" multiple accept=".txt,.TXT">
+      <svg width="110" height="72" viewBox="0 0 110 72" fill="none" style="display:block;margin:0 auto">
+        <!-- Platform -->
+        <rect x="8" y="60" width="94" height="4" rx="2" fill="oklch(88% 0.016 252)"/>
+        <ellipse cx="55" cy="63" rx="32" ry="3" fill="oklch(88% 0.018 252)"/>
+        <!-- Back doc -->
+        <g style="animation:float 3s .4s ease-in-out infinite">
+          <rect x="60" y="22" width="28" height="35" rx="3" fill="oklch(93.5% 0.013 252)" stroke="oklch(82% 0.022 252)" stroke-width="1"/>
+          <rect x="65" y="30" width="14" height="2" rx="1" fill="var(--amber)" opacity=".5"/>
+          <rect x="65" y="35" width="16" height="1.5" rx=".75" fill="oklch(78% 0.025 252)"/>
+          <rect x="67" y="39" width="12" height="1.5" rx=".75" fill="oklch(78% 0.025 252)"/>
+          <rect x="67" y="43" width="14" height="1.5" rx=".75" fill="oklch(78% 0.025 252)"/>
+          <rect x="67" y="47" width="10" height="1.5" rx=".75" fill="oklch(80% 0.02 252)"/>
+        </g>
+        <!-- Main doc -->
+        <g style="animation:docFloat 3s ease-in-out infinite">
+          <rect x="22" y="14" width="36" height="44" rx="3" fill="white" stroke="var(--amber)" stroke-width="1.4"/>
+          <path d="M46 14L58 26L46 26Z" fill="var(--amber-lo)" stroke="var(--amber)" stroke-width=".8"/>
+          <!-- Plan header line -->
+          <rect x="28" y="27" width="22" height="2.5" rx="1.2" fill="var(--amber)"/>
+          <!-- Operation lines with indent -->
+          <rect x="30" y="32" width="2" height="13" rx="1" fill="oklch(74% 0.1 68)" opacity=".5"/>
+          <rect x="34" y="33" width="14" height="2" rx="1" fill="oklch(84% 0.08 68)"/>
+          <rect x="34" y="37" width="16" height="1.5" rx=".75" fill="oklch(84% 0.08 68)"/>
+          <rect x="36" y="41" width="10" height="1.5" rx=".75" fill="oklch(88% 0.06 148)"/>
+          <rect x="34" y="45" width="13" height="1.5" rx=".75" fill="oklch(84% 0.08 68)"/>
+          <rect x="36" y="49" width="8" height="1.5" rx=".75" fill="oklch(88% 0.06 295)"/>
+        </g>
+        <!-- Upload arrow -->
+        <g style="animation:float 2.4s .6s ease-in-out infinite">
+          <path d="M55 11L55 3M50 7.5L55 2.5L60 7.5" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <!-- Sparkles -->
+        <circle cx="18" cy="20" r="2" fill="var(--amber)" opacity=".5" style="animation:pulse 2s .2s ease-in-out infinite"/>
+        <circle cx="93" cy="30" r="1.5" fill="var(--green)" opacity=".4" style="animation:pulse 2.4s .8s ease-in-out infinite"/>
+        <circle cx="14" cy="44" r="1.5" fill="var(--purple)" opacity=".4" style="animation:pulse 2.2s 1.2s ease-in-out infinite"/>
+      </svg>
+      <div class="drop-title">Arrastra los archivos TXT de IA10 aquí</div>
+      <div class="drop-sub">o haz clic para seleccionar · Múltiples archivos soportados</div>
+      <div class="drop-hint">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 4v5M8 11.5v.5"/></svg>
+        Exporta el IA10 como archivo .txt en texto plano (no convertido) · Codificación Windows-1252
+      </div>
+    </div>
+    <div id="file-list"></div>
+  </div>
+
+  <!-- Warnings -->
+  <div id="wsec" class="hidden">
+    <details id="wdet">
+      <summary>
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M8 1L15 14H1z"/><path d="M8 6v4M8 12v.5" stroke-linecap="round"/></svg>
+        Advertencias del parser (<span id="wcnt">0</span>)
+      </summary>
+      <div id="wlist"></div>
+    </details>
+  </div>
+
+  <!-- Controls -->
+  <div id="cbar" class="hidden">
+    <button class="btn btn-p" id="btn-excel" data-step="export">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 2h7l4 4v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zm6 0v4h4"/><path d="M5.5 10l1.5 2 3.5-4" stroke-linejoin="round"/></svg>
+      Exportar Excel (5 hojas)
+    </button>
+    <div class="dvdr"></div>
+    <button class="btn btn-g" id="btn-clear">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+      Limpiar todo
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div id="twrap" class="hidden">
+    <div id="tabs">
+      <button class="tab on" data-tab="cabecera">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 6h14"/></svg>
+        Cabecera <span class="tab-n" id="tn-cabecera">0</span>
+      </button>
+      <button class="tab" data-tab="operaciones">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 4h12M2 8h8M2 12h10"/></svg>
+        Operaciones <span class="tab-n" id="tn-operaciones">0</span>
+      </button>
+      <button class="tab" data-tab="paquetes">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        Paquetes Mtto <span class="tab-n" id="tn-paquetes">0</span>
+      </button>
+      <button class="tab" data-tab="materiales">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 2L14 5v6L8 14L2 11V5L8 2z"/><path d="M8 2v12M2 5l6 3 6-3"/></svg>
+        Materiales <span class="tab-n" id="tn-materiales">0</span>
+      </button>
+      <button class="tab" data-tab="consolidado">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1 4h14M1 8h14M1 12h14"/><path d="M5 1v14M11 1v14"/></svg>
+        Consolidado <span class="tab-n" id="tn-consolidado">0</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Table section -->
+  <div id="tsec" class="hidden">
+    <div id="frow">
+      <div class="srch">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l3.5 3.5"/></svg>
+        <input type="search" id="sinput" placeholder="Buscar código, descripción, frecuencia…">
+      </div>
+      <select class="fsel" id="farchivo"><option value="">Todos los archivos</option></select>
+      <span id="rowcnt"></span>
+    </div>
+    <div id="twrap2">
+      <div id="empty">
+        <svg width="120" height="80" viewBox="0 0 120 80" fill="none">
+          <!-- Document icon -->
+          <rect x="35" y="10" width="50" height="60" rx="4" fill="oklch(92% 0.014 252)"/>
+          <rect x="35" y="10" width="50" height="60" rx="4" stroke="oklch(82% 0.022 252)" stroke-width="1.5"/>
+          <path d="M70 10v15h15" fill="oklch(88% 0.02 252)" stroke="oklch(82% 0.022 252)" stroke-width="1"/>
+          <!-- Lines -->
+          <rect x="44" y="33" width="24" height="2.5" rx="1.2" fill="var(--amber)" opacity=".6" style="animation:pulse 2s ease-in-out infinite"/>
+          <rect x="44" y="40" width="30" height="2" rx="1" fill="oklch(84% 0.02 252)" style="animation:pulse 2s .3s ease-in-out infinite"/>
+          <rect x="47" y="46" width="22" height="2" rx="1" fill="oklch(84% 0.02 252)" style="animation:pulse 2s .6s ease-in-out infinite"/>
+          <rect x="44" y="52" width="28" height="2" rx="1" fill="oklch(84% 0.02 252)" style="animation:pulse 2s .9s ease-in-out infinite"/>
+          <rect x="47" y="58" width="18" height="2" rx="1" fill="oklch(84% 0.02 252)" style="animation:pulse 2s 1.2s ease-in-out infinite"/>
+        </svg>
+        <p>Carga los archivos TXT de IA10 para comenzar</p>
+        <span>Soporta múltiples archivos · 5 hojas en Excel: Cabecera, Operaciones, Paquetes, Materiales y Consolidado</span>
+      </div>
+      <table id="dtable" style="display:none">
+        <thead id="dthead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div id="pag" class="hidden">
+      <span class="pi" id="pagi"></span>
+      <div class="pc" id="pagc"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ─── SCRIPTS ──────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/intro.js@7.2.0/minified/intro.min.js"></script>
+<script>
+'use strict';
+
+/* ════════════════════════════════════════════════════════
+   IA10 PARSER
+   ──────────────────────────────────────────────────────
+   Estructura IA10:
+   ─ Plan header:       "     CODE  Description"  (5 espacios, sin pipe)
+   ─ Operación col 2:  "  |--   CODE NNNN Desc"  (2 o 3 guiones)
+   ─ Frecuencia col 6: "      |---  XX  FreqName" (código 1-2 dígitos ≤ 20)
+   ─ Material col 6:   "      |---  NNNNN   Desc" (código 5+ dígitos)
+   ─ Qty/Unit:         "      |          N  UN"   (continuación de material)
+   ─ Texto largo:      "  |  texto…"              (después de operación, sin sub-pipe)
+════════════════════════════════════════════════════════ */
+const IA10Parser = (() => {
+
+  function parseIA10(text, filename) {
+    const lines = text.split(/\r?\n/);
+    const plans = [];
+    const warns = [];
+    let currentPlan = null;
+    let currentOp   = null;
+    let lastMat     = null;
+
+    for (let i = 0; i < lines.length; i++) {
+      const raw = lines[i];
+
+      // ── skip blanks and pure-connector lines ──────────
+      if (!raw.trim()) continue;
+      if (/^[\s|]+$/.test(raw)) continue;
+
+      // ── PLAN HEADER ───────────────────────────────────
+      // "     CODE  Description"  — 5 spaces, no pipe character
+      if (/^     \S/.test(raw) && raw.indexOf('|') === -1) {
+        const m = raw.match(/^     (\S+)\s+([\s\S]+)$/);
+        if (m) {
+          currentPlan = {
+            code: m[1].trim(),
+            description: m[2].trim(),
+            operations: [],
+            filename
+          };
+          plans.push(currentPlan);
+          currentOp = null;
+          lastMat   = null;
+        }
+        continue;
+      }
+
+      // ── OPERATION (col 2, 2+ dashes) ─────────────────
+      // "  |--    CODE  0010 Description"
+      // "  |---   CODE  0010 Description"
+      if (/^  \|[-]{2,}/.test(raw)) {
+        const m = raw.match(/^  \|[-]+\s+(\S+)\s+(\d{4})\s+([\s\S]*)$/);
+        if (m && currentPlan) {
+          currentOp = {
+            planCode:    m[1].trim(),
+            number:      m[2].trim(),
+            description: m[3].trim(),
+            extendedText: '',
+            frequencies: [],
+            materials:   [],
+            steps:       []
+          };
+          currentPlan.operations.push(currentOp);
+          lastMat = null;
+        } else if (currentPlan) {
+          warns.push({ linea: i+1, texto: raw.trim().slice(0, 80), razon: 'Operación sin número reconocible' });
+        }
+        continue;
+      }
+
+      // ── FREQUENCY or MATERIAL (col 6, |---) ──────────
+      // Frequency:  "      |---   01      Mensual"
+      // Material:   "      |---   1000007                   Tubo..."
+      if (/^      \|---/.test(raw)) {
+        const m = raw.match(/^      \|---\s+(\S+)\s+([\s\S]*)$/);
+        if (m && currentOp) {
+          const code = m[1].trim();
+          const rest = m[2];
+
+          if (/^\d{1,2}$/.test(code) && parseInt(code, 10) <= 20) {
+            // FREQUENCY: short numeric code ≤ 20
+            currentOp.frequencies.push({ code, name: rest.trim() });
+            lastMat = null;
+          } else if (/^0\d{3}$/.test(code)) {
+            // SUB-TASK / CHECKLIST STEP: 4-char code starting with 0 (e.g. 0010, 0020)
+            currentOp.steps.push({ code, description: rest.trim() });
+            lastMat = null;
+          } else {
+            // MATERIAL: short (3-4 digit) or long (7 digit) SAP material number
+            const desc = rest.replace(/\s{3,}/g, ' ').trim();
+            lastMat = { code, description: desc, qty: '', unit: '' };
+            currentOp.materials.push(lastMat);
+          }
+        }
+        continue;
+      }
+
+      // ── MATERIAL QTY/UNIT continuation ───────────────
+      // "      |                      1  UN"
+      if (/^      \|/.test(raw) && lastMat && !/^      \|---/.test(raw) && !/^      \|--/.test(raw)) {
+        const m = raw.match(/^      \|\s{5,}(\d+(?:[.,]\d+)?)\s+([A-Za-z]{1,5})\s*$/);
+        if (m) {
+          lastMat.qty  = m[1];
+          lastMat.unit = m[2].toUpperCase();
+        }
+        continue;
+      }
+
+      // ── EXTENDED TEXT ─────────────────────────────────
+      // Lines like "  |   Texto largo de la operación"
+      // They have | at col 2, then spaces, then text (no secondary pipe)
+      if (/^  \|/.test(raw) && currentOp && !/^  \|[-]{2,}/.test(raw)) {
+        const m = raw.match(/^  \|\s{3,}([^|][\s\S]*)$/);
+        if (m) {
+          const txt = m[1].trim();
+          if (txt) {
+            currentOp.extendedText = currentOp.extendedText
+              ? currentOp.extendedText + ' ' + txt
+              : txt;
+          }
+        }
+        continue;
+      }
+    }
+
+    return { plans, warns, filename };
+  }
+
+  return { parseIA10 };
+})();
+
+
+/* ════════════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════════════ */
+const S = (() => {
+  let _plans  = [];   // All plans from all files
+  let _files  = [];   // Metadata per file
+  let _tab    = 'cabecera';
+  let _page   = 1;
+  let _search = '';
+  let _farch  = '';
+  let _sortCol = null;
+  let _sortAsc = true;
+  const PS = 100;
+
+  function _ops()  { return _plans.flatMap(p => p.operations.map(o => ({ ...o, planDesc: p.description, planCode2: p.code, filename: p.filename }))); }
+  function _freqs(){ return _ops().flatMap(o => o.frequencies.map(f => ({ planCode: o.planCode, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, pkgCode: f.code, frequency: f.name, filename: o.filename }))); }
+  function _mats() { return _ops().flatMap(o => o.materials.map(m => ({ planCode: o.planCode, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, matCode: m.code, matDesc: m.description, qty: m.qty, unit: m.unit, filename: o.filename }))); }
+
+  function rows(tab) {
+    switch (tab) {
+      case 'cabecera':    return _plans.map(p => ({ planCode: p.code, description: p.description, numOps: p.operations.length, filename: p.filename }));
+      case 'operaciones': return _ops().map(o => ({ planCode: o.planCode, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, extText: o.extendedText, numFreqs: o.frequencies.length, numMats: o.materials.length, numPasos: (o.steps||[]).length, filename: o.filename }));
+      case 'paquetes':    return _freqs();
+      case 'materiales':  return _mats();
+      case 'consolidado': return _ops().map(o => ({ planCode: o.planCode, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, extText: o.extendedText, freqs: o.frequencies.map(f => `${f.code} – ${f.name}`).join('; ') || '—', numFreqs: o.frequencies.length, mats: o.materials.map(m => `[${m.code}] ${m.description}${m.qty ? ` (${m.qty} ${m.unit})` : ''}`).join('; ') || '—', numMats: o.materials.length, numPasos: (o.steps||[]).length, filename: o.filename }));
+      default: return [];
+    }
+  }
+
+  function filtered(tab) {
+    let r = rows(tab);
+    if (_farch) r = r.filter(x => x.filename === _farch);
+    if (_search) {
+      const q = _search.toLowerCase();
+      r = r.filter(x => Object.values(x).some(v => String(v).toLowerCase().includes(q)));
+    }
+    if (_sortCol) {
+      r = [...r].sort((a, b) => {
+        const av = String(a[_sortCol] ?? '').toLowerCase();
+        const bv = String(b[_sortCol] ?? '').toLowerCase();
+        return _sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+      });
+    }
+    return r;
+  }
+
+  return {
+    get plans()  { return _plans },
+    get files()  { return _files },
+    get tab()    { return _tab }, set tab(v) { _tab = v; _page = 1 },
+    get page()   { return _page }, set page(v) { _page = v },
+    get PS()     { return PS },
+    get search() { return _search }, set search(v) { _search = v; _page = 1 },
+    get farch()  { return _farch },  set farch(v)  { _farch = v; _page = 1 },
+    get sortCol(){ return _sortCol },
+    get sortAsc(){ return _sortAsc },
+    setSort(c)   { if (_sortCol === c) _sortAsc = !_sortAsc; else { _sortCol = c; _sortAsc = true }; _page = 1 },
+    addFile(data) {
+      _plans = _plans.filter(p => p.filename !== data.filename);
+      _plans.push(...data.plans);
+      const idx = _files.findIndex(f => f.filename === data.filename);
+      const meta = { filename: data.filename, plans: data.plans.length, warns: data.warns.length, allWarns: data.warns };
+      if (idx > -1) _files.splice(idx, 1, meta); else _files.push(meta);
+    },
+    removeFile(fn) {
+      _plans = _plans.filter(p => p.filename !== fn);
+      _files = _files.filter(f => f.filename !== fn);
+    },
+    clear() { _plans = []; _files = []; _tab = 'cabecera'; _page = 1; _search = ''; _farch = ''; _sortCol = null; _sortAsc = true },
+    rows, filtered,
+    get stats() {
+      return {
+        plans:  _plans.length,
+        ops:    _ops().length,
+        pkgs:   _freqs().length,
+        mats:   _mats().length
+      };
+    },
+    get counts() {
+      return {
+        cabecera:    rows('cabecera').length,
+        operaciones: rows('operaciones').length,
+        paquetes:    rows('paquetes').length,
+        materiales:  rows('materiales').length,
+        consolidado: rows('consolidado').length
+      };
+    },
+    get allWarns() { return _files.flatMap(f => f.allWarns.map(w => ({ ...w, archivo: f.filename }))) },
+    get fileList() { return _files.map(f => f.filename) }
+  };
+})();
+
+
+/* ════════════════════════════════════════════════════════
+   COLUMNS CONFIG
+════════════════════════════════════════════════════════ */
+const COLS = {
+  cabecera: [
+    { key: 'planCode',    label: 'Código Plan',      render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'description', label: 'Descripción Plan', render: r => `<span class="dc text-wrap">${esc(r.description)}</span>` },
+    { key: 'numOps',      label: '# Operaciones',    render: r => `<span class="num-cell">${r.numOps}</span>` },
+    { key: 'filename',    label: 'Archivo',          render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
+  ],
+  operaciones: [
+    { key: 'planCode', label: 'Código Plan', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'opNum',    label: 'N° Op.',      render: r => `<span class="cc">${esc(r.opNum)}</span>` },
+    { key: 'opDesc',   label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
+    { key: 'extText',  label: 'Texto Largo', render: r => r.extText ? `<span class="et-cell" title="${esc(r.extText)}">${esc(r.extText)}</span>` : `<span class="dc-dim">—</span>` },
+    { key: 'numFreqs', label: '# Paquetes',  render: r => `<span class="cnt-badge ${r.numFreqs > 0 ? 'has-freqs' : ''}">${r.numFreqs}</span>` },
+    { key: 'numMats',  label: '# Materiales',render: r => `<span class="cnt-badge ${r.numMats  > 0 ? 'has-mats'  : ''}">${r.numMats}</span>`  },
+    { key: 'numPasos', label: '# Pasos',     render: r => r.numPasos > 0 ? `<span class="cnt-badge has-steps">${r.numPasos}</span>` : `<span class="cnt-badge">0</span>` },
+    { key: 'filename', label: 'Archivo', render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
+  ],
+  paquetes: [
+    { key: 'planCode',   label: 'Código Plan', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'opNum',      label: 'N° Op.',      render: r => `<span class="cc">${esc(r.opNum)}</span>` },
+    { key: 'opDesc',     label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
+    { key: 'pkgCode',    label: 'N° Paquete',  render: r => `<span class="cc">${esc(r.pkgCode)}</span>` },
+    { key: 'frequency',  label: 'Frecuencia',  render: r => `<span class="freq-badge"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>${esc(r.frequency)}</span>` },
+    { key: 'filename',   label: 'Archivo', render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
+  ],
+  materiales: [
+    { key: 'planCode',   label: 'Código Plan', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'opNum',      label: 'N° Op.',      render: r => `<span class="cc">${esc(r.opNum)}</span>` },
+    { key: 'opDesc',     label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
+    { key: 'matCode',    label: 'Código Material', render: r => `<span class="mat-badge">${esc(r.matCode)}</span>` },
+    { key: 'matDesc',    label: 'Descripción Material', render: r => `<span class="dc text-wrap">${esc(r.matDesc)}</span>` },
+    { key: 'qty',        label: 'Cantidad',  render: r => `<span class="qty-cell">${esc(r.qty) || '—'}</span>` },
+    { key: 'unit',       label: 'Unidad',    render: r => `<span class="unit-cell">${esc(r.unit) || '—'}</span>` },
+    { key: 'filename',   label: 'Archivo', render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
+  ],
+  consolidado: [
+    { key: 'planCode',  label: 'Código Plan', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'planDesc',  label: 'Descripción Plan', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
+    { key: 'opNum',     label: 'N° Op.',  render: r => `<span class="cc">${esc(r.opNum)}</span>` },
+    { key: 'opDesc',    label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
+    { key: 'extText',   label: 'Texto Largo', render: r => r.extText ? `<span class="et-cell" title="${esc(r.extText)}">${esc(r.extText)}</span>` : `<span class="dc-dim">—</span>` },
+    { key: 'freqs',     label: 'Frecuencias', render: r => `<span class="dc text-wrap" style="font-size:11px">${esc(r.freqs)}</span>` },
+    { key: 'numMats',   label: '# Mat.', render: r => `<span class="cnt-badge ${r.numMats > 0 ? 'has-mats' : ''}">${r.numMats}</span>` },
+    { key: 'filename',  label: 'Archivo', render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
+  ]
+};
+
+
+/* ════════════════════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════════════════════ */
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let _toastTimer = null;
+function toast(msg, type = 'n') {
+  const el = document.getElementById('toast');
+  const ico = document.getElementById('tico');
+  const tm  = document.getElementById('tmsg');
+  el.className = type === 'w' ? 'tw' : type === 'e' ? 'te' : '';
+  ico.innerHTML = type === 'e' ? '<path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 4v4M8 11.5v.5"/>' : type === 'w' ? '<path d="M8 1L15 14H1z"/><path d="M8 6v4M8 12v.5"/>' : '<path d="M3 8l4 4 6-7"/>';
+  tm.textContent = msg;
+  el.classList.remove('hidden');
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.add('hidden'), 3400);
+}
+
+function showLoading(fname, label = 'Analizando archivos IA10…') {
+  document.getElementById('loading').classList.remove('hidden');
+  document.getElementById('l-title').textContent = label;
+  document.getElementById('l-fname').textContent = fname;
+  document.getElementById('l-bar').style.width = '0%';
+  document.getElementById('l-counter').textContent = '';
+  document.getElementById('l-rows').textContent = '';
+}
+
+function setLoadProgress(pct, counter, rows) {
+  document.getElementById('l-bar').style.width = pct + '%';
+  document.getElementById('l-counter').textContent = counter;
+  document.getElementById('l-rows').textContent = rows;
+}
+
+function hideLoading() {
+  document.getElementById('loading').classList.add('hidden');
+}
+
+function fmtNum(n) {
+  return n.toLocaleString('es-CO');
+}
+
+
+/* ════════════════════════════════════════════════════════
+   UI RENDERERS
+════════════════════════════════════════════════════════ */
+function updateStats() {
+  const st = S.stats;
+  document.getElementById('hs-plans').textContent = fmtNum(st.plans);
+  document.getElementById('hs-ops').textContent   = fmtNum(st.ops);
+  document.getElementById('hs-pkgs').textContent  = fmtNum(st.pkgs);
+  document.getElementById('hs-mats').textContent  = fmtNum(st.mats);
+}
+
+function renderFileList() {
+  const fl = document.getElementById('file-list');
+  if (!S.files.length) { fl.innerHTML = ''; return; }
+  fl.innerHTML = S.files.map(f => {
+    const plansList = S.plans.filter(p => p.filename === f.filename);
+    const ops  = plansList.flatMap(p => p.operations).length;
+    const pkgs = plansList.flatMap(p => p.operations.flatMap(o => o.frequencies)).length;
+    const mats = plansList.flatMap(p => p.operations.flatMap(o => o.materials)).length;
+    return `<div class="fcard">
+      <div class="fcard-ico">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="1.8" stroke-linecap="round">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+      </div>
+      <div class="fcard-info">
+        <div class="fcard-name">${esc(f.filename)}</div>
+        <div class="fcard-meta">${fmtNum(f.plans)} plan${f.plans !== 1 ? 'es' : ''}</div>
+        <div class="fcard-chips">
+          <span class="chip chip-p">⚙ ${fmtNum(ops)} ops.</span>
+          <span class="chip chip-f">◷ ${fmtNum(pkgs)} paquetes</span>
+          <span class="chip chip-m">◈ ${fmtNum(mats)} materiales</span>
+          ${f.warns > 0 ? `<span class="chip chip-w">⚠ ${f.warns} avisos</span>` : ''}
+        </div>
+      </div>
+      <button class="btn-rm" data-rm="${esc(f.filename)}" title="Quitar archivo">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function renderArchFilter() {
+  const sel = document.getElementById('farchivo');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Todos los archivos</option>' +
+    S.fileList.map(fn => `<option value="${esc(fn)}" ${fn === cur ? 'selected' : ''}>${esc(fn)}</option>`).join('');
+}
+
+function renderTabCounts() {
+  const c = S.counts;
+  ['cabecera','operaciones','paquetes','materiales','consolidado'].forEach(t => {
+    const el = document.getElementById('tn-' + t);
+    if (el) el.textContent = fmtNum(c[t]);
+  });
+}
+
+function renderTabs() {
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.classList.toggle('on', btn.dataset.tab === S.tab);
+  });
+}
+
+function renderTable() {
+  const cols = COLS[S.tab];
+  if (!cols) return;
+
+  const allRows = S.filtered(S.tab);
+  const total   = allRows.length;
+  const start   = (S.page - 1) * S.PS;
+  const pageRows = allRows.slice(start, start + S.PS);
+
+  // Header
+  const thead = document.getElementById('dthead');
+  thead.innerHTML = `<tr>${cols.map(c => {
+    const arrow = S.sortCol === c.key ? (S.sortAsc ? ' ▲' : ' ▼') : '';
+    return `<th data-key="${c.key}">${esc(c.label)}<span class="ths">${arrow}</span></th>`;
+  }).join('')}</tr>`;
+
+  // Body
+  const tbody = document.getElementById('tbody');
+  if (!pageRows.length) {
+    tbody.innerHTML = '';
+    document.getElementById('dtable').style.display = 'none';
+    document.getElementById('empty').style.display = 'flex';
+  } else {
+    document.getElementById('dtable').style.display = '';
+    document.getElementById('empty').style.display = 'none';
+    tbody.innerHTML = pageRows.map((r, i) =>
+      `<tr style="animation:rowIn .25s ${(i * 0.018).toFixed(2)}s var(--eox) both">
+        ${cols.map(c => `<td>${c.render(r)}</td>`).join('')}
+      </tr>`
+    ).join('');
+  }
+
+  // Row count
+  document.getElementById('rowcnt').textContent = total
+    ? `${fmtNum(Math.min(start + 1, total))}–${fmtNum(Math.min(start + S.PS, total))} de ${fmtNum(total)}`
+    : 'Sin resultados';
+
+  // Pagination
+  renderPagination(total);
+}
+
+function renderPagination(total) {
+  const pages = Math.ceil(total / S.PS);
+  const pag   = document.getElementById('pag');
+  const pi    = document.getElementById('pagi');
+  const pc    = document.getElementById('pagc');
+  if (pages <= 1) { pag.classList.add('hidden'); return; }
+  pag.classList.remove('hidden');
+  pi.textContent = `Página ${S.page} de ${pages}`;
+  const btns = [];
+  btns.push(`<button class="pb" ${S.page === 1 ? 'disabled' : ''} data-pg="prev">‹</button>`);
+  let lo = Math.max(1, S.page - 2), hi = Math.min(pages, S.page + 2);
+  if (lo > 1)     btns.push(`<button class="pb" data-pg="1">1</button>${lo > 2 ? '<span style="padding:0 4px;color:var(--text-3)">…</span>' : ''}`);
+  for (let p = lo; p <= hi; p++) btns.push(`<button class="pb ${p === S.page ? 'on' : ''}" data-pg="${p}">${p}</button>`);
+  if (hi < pages) btns.push(`${hi < pages-1 ? '<span style="padding:0 4px;color:var(--text-3)">…</span>' : ''}<button class="pb" data-pg="${pages}">${pages}</button>`);
+  btns.push(`<button class="pb" ${S.page === pages ? 'disabled' : ''} data-pg="next">›</button>`);
+  pc.innerHTML = btns.join('');
+}
+
+function refresh() {
+  const hasData = S.files.length > 0;
+  document.getElementById('cbar').classList.toggle('hidden', !hasData);
+  document.getElementById('twrap').classList.toggle('hidden', !hasData);
+  document.getElementById('tsec').classList.toggle('hidden', !hasData);
+
+  // Warnings
+  const warns = S.allWarns;
+  document.getElementById('wsec').classList.toggle('hidden', warns.length === 0);
+  document.getElementById('wcnt').textContent = warns.length;
+  document.getElementById('wlist').innerHTML = warns.map(w =>
+    `<div class="wi">[L${w.linea}] ${esc(w.razon)} — ${esc(w.texto)}</div>`
+  ).join('');
+
+  updateStats();
+  renderFileList();
+  renderArchFilter();
+  renderTabCounts();
+  renderTabs();
+  renderTable();
+}
+
+
+/* ════════════════════════════════════════════════════════
+   EXCEL EXPORT
+════════════════════════════════════════════════════════ */
+function exportExcel() {
+  const wb = XLSX.utils.book_new();
+
+  // ─ Sheet 1: Cabecera ─────────────────────────────────
+  const cabData = S.rows('cabecera');
+  const cabAoA = [
+    ['Código Plan', 'Descripción Plan', '# Operaciones', 'Archivo'],
+    ...cabData.map(r => [r.planCode, r.description, r.numOps, r.filename])
+  ];
+  const wsCab = XLSX.utils.aoa_to_sheet(cabAoA);
+  styleSheet(wsCab, cabAoA, [14, 45, 14, 30]);
+  XLSX.utils.book_append_sheet(wb, wsCab, 'Cabecera');
+
+  // ─ Sheet 2: Operaciones ──────────────────────────────
+  const opsData = S.rows('operaciones');
+  const opsAoA = [
+    ['Código Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', '# Paquetes', '# Materiales', '# Pasos', 'Archivo'],
+    ...opsData.map(r => [r.planCode, r.opNum, r.opDesc, r.extText, r.numFreqs, r.numMats, r.numPasos, r.filename])
+  ];
+  const wsOps = XLSX.utils.aoa_to_sheet(opsAoA);
+  styleSheet(wsOps, opsAoA, [14, 11, 48, 48, 10, 12, 10, 30]);
+  XLSX.utils.book_append_sheet(wb, wsOps, 'Operaciones');
+
+  // ─ Sheet 3: Paquetes de Mantenimiento ────────────────
+  const pkgData = S.rows('paquetes');
+  const pkgAoA = [
+    ['Código Plan', 'N° Operación', 'Descripción Operación', 'N° Paquete', 'Frecuencia', 'Archivo'],
+    ...pkgData.map(r => [r.planCode, r.opNum, r.opDesc, r.pkgCode, r.frequency, r.filename])
+  ];
+  const wsPkg = XLSX.utils.aoa_to_sheet(pkgAoA);
+  styleSheet(wsPkg, pkgAoA, [14, 11, 48, 11, 28, 30]);
+  XLSX.utils.book_append_sheet(wb, wsPkg, 'Paquetes_Mtto');
+
+  // ─ Sheet 4: Materiales ───────────────────────────────
+  const matData = S.rows('materiales');
+  const matAoA = [
+    ['Código Plan', 'N° Operación', 'Descripción Operación', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', 'Archivo'],
+    ...matData.map(r => [r.planCode, r.opNum, r.opDesc, r.matCode, r.matDesc, r.qty, r.unit, r.filename])
+  ];
+  const wsMat = XLSX.utils.aoa_to_sheet(matAoA);
+  styleSheet(wsMat, matAoA, [14, 11, 42, 14, 48, 10, 8, 30]);
+  XLSX.utils.book_append_sheet(wb, wsMat, 'Materiales');
+
+  // ─ Sheet 5: Consolidado ──────────────────────────────
+  const conData = S.rows('consolidado');
+  const conAoA = [
+    ['Código Plan', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Frecuencias / Paquetes', '# Mat.', 'Materiales', '# Pasos', 'Archivo'],
+    ...conData.map(r => [r.planCode, r.planDesc, r.opNum, r.opDesc, r.extText, r.freqs === '—' ? '' : r.freqs, r.numMats, r.mats === '—' ? '' : r.mats, r.numPasos, r.filename])
+  ];
+  const wsCon = XLSX.utils.aoa_to_sheet(conAoA);
+  styleSheet(wsCon, conAoA, [14, 40, 11, 44, 44, 44, 8, 60, 8, 30]);
+  XLSX.utils.book_append_sheet(wb, wsCon, 'Consolidado');
+
+  // Write file
+  const ts = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, `IA10_HojasRuta_${ts}.xlsx`);
+  toast(`Excel exportado · ${fmtNum(opsData.length)} ops · ${fmtNum(pkgData.length)} paquetes · ${fmtNum(matData.length)} materiales`, 'n');
+}
+
+function styleSheet(ws, data, colWidths) {
+  // Column widths
+  ws['!cols'] = colWidths.map(w => ({ wch: w }));
+
+  // Header style
+  const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+  for (let c = range.s.c; c <= range.e.c; c++) {
+    const addr = XLSX.utils.encode_cell({ r: 0, c });
+    if (!ws[addr]) continue;
+    ws[addr].s = {
+      font:    { bold: true, color: { rgb: 'FFFFFF' }, sz: 10 },
+      fill:    { fgColor: { rgb: '1B2A47' } },
+      alignment: { vertical: 'center', wrapText: false }
+    };
+  }
+  // Data rows alternating
+  for (let r = 1; r <= range.e.r; r++) {
+    for (let c = range.s.c; c <= range.e.c; c++) {
+      const addr = XLSX.utils.encode_cell({ r, c });
+      if (!ws[addr]) continue;
+      ws[addr].s = {
+        fill:      { fgColor: { rgb: r % 2 === 0 ? 'F7F8FA' : 'FFFFFF' } },
+        alignment: { vertical: 'center', wrapText: true },
+        font:      { sz: 10 }
+      };
+    }
+  }
+  // Freeze first row
+  ws['!freeze'] = { xSplit: 0, ySplit: 1 };
+}
+
+
+/* ════════════════════════════════════════════════════════
+   FILE PROCESSING
+════════════════════════════════════════════════════════ */
+async function processFiles(fileList) {
+  if (!fileList || !fileList.length) return;
+  const files = Array.from(fileList);
+  showLoading(files[0].name);
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    setLoadProgress(
+      Math.round(((i) / files.length) * 90),
+      `Archivo ${i+1} de ${files.length}`,
+      file.name
+    );
+    document.getElementById('l-fname').textContent = file.name;
+
+    try {
+      const text = await readFileWin1252(file);
+      // Parse in next tick to allow UI update
+      await new Promise(r => setTimeout(r, 0));
+      const result = IA10Parser.parseIA10(text, file.name);
+      S.addFile(result);
+    } catch (e) {
+      toast(`Error al procesar ${file.name}: ${e.message}`, 'e');
+    }
+  }
+
+  setLoadProgress(100, 'Listo', '');
+  await new Promise(r => setTimeout(r, 350));
+  hideLoading();
+  refresh();
+
+  const st = S.stats;
+  toast(`${files.length} archivo${files.length > 1 ? 's' : ''} cargado${files.length > 1 ? 's' : ''} · ${fmtNum(st.plans)} planes · ${fmtNum(st.ops)} operaciones`);
+}
+
+function readFileWin1252(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = () => reject(new Error('No se pudo leer el archivo'));
+    // Try Windows-1252 first; fallback handled by browser
+    reader.readAsText(file, 'windows-1252');
+  });
+}
+
+
+/* ════════════════════════════════════════════════════════
+   GUIDED TOUR
+════════════════════════════════════════════════════════ */
+const DEMO_TXT = `     100011   Pruebas Hidrostaticas/Emision Acustica Q
+  |
+  |--    100011   0010 Prueba de cilindros
+  |   |
+  |   |---   07      Cinco A\xf1os
+  |
+  |--    100011   0020 Validaci\xf3n emisi\xf3n de ruidos
+      |
+      |---   07      Cinco A\xf1os
+
+     ADA-015  PM-Mantenimiento Adapter
+  |
+  |--    ADA-015  0010 Verificaci\xf3n ranura RTJ
+  |   |
+  |   |---   04      Semestral
+  |   |---   05      Anual
+  |
+  |--    ADA-015  0020 Verificaci\xf3n superficie sello junta RF
+  |   |
+  |   |---   04      Semestral
+  |   |---   05      Anual
+  |
+  |--    ADA-015  0030 Verificaci\xf3n de roscas de ecualizaci\xf3n
+      |
+      |---   04      Semestral
+
+     WACZACC2 WM-instalaci\xf3n Market Place
+  |
+  |--    WACZACC2 0010 WM-instalaci\xf3n Market Place
+      |
+      |---   6002103                                  Instalacion Estufa
+      |                      1  UN
+      |---   6002101                                  Instalacion Campana
+      |                      1  UN
+      |---   6002104                                  Instalacion Horno
+      |                      1  UN
+      |---   6002100                                  Instalacion Calentador
+      |                      1  UN`;
+
+async function ensureDemoForTour() {
+  if (S.files.length) return;
+  const result = IA10Parser.parseIA10(DEMO_TXT, 'DEMO-IA10.txt');
+  S.addFile(result);
+  refresh();
+  await new Promise(r => setTimeout(r, 120));
+}
+
+async function startGuidedTour() {
+  await ensureDemoForTour();
+  if (typeof introJs === 'undefined') { toast('Tour no disponible', 'w'); return; }
+
+  const tour = introJs();
+  tour.setOptions({
+    showProgress: true,
+    exitOnOverlayClick: false,
+    nextLabel: 'Siguiente →',
+    prevLabel: '← Anterior',
+    doneLabel: '✓ Listo',
+    steps: [
+      {
+        title: '¡Bienvenido a IA10 · Hojas de Ruta!',
+        intro: 'Esta herramienta extrae y estructura el reporte <strong>IA10 de SAP PM</strong>: planes de mantenimiento, operaciones, paquetes de frecuencia y materiales. Hemos cargado datos de demostración para mostrarte el flujo.'
+      },
+      {
+        element: document.getElementById('drop-area'),
+        title: '1 · Carga de archivos',
+        intro: 'Arrastra aquí uno o <strong>varios archivos TXT</strong> de IA10. Deben ser el reporte exportado en texto plano desde SAP (sin convertir), con codificación <code>Windows-1252</code>. Se pueden cargar múltiples archivos simultáneamente.'
+      },
+      {
+        element: document.getElementById('file-list'),
+        title: '2 · Resumen por archivo',
+        intro: 'Cada tarjeta muestra el archivo cargado con un resumen de <strong>planes, operaciones, paquetes de frecuencia y materiales</strong> detectados. Puedes quitar cualquier archivo con el botón ✕.'
+      },
+      {
+        element: document.getElementById('tabs'),
+        title: '3 · Navegación por vistas',
+        intro: '<strong>Cinco vistas</strong> organizan los datos:<br>• <b>Cabecera</b> — Listado de planes<br>• <b>Operaciones</b> — Todas las operaciones<br>• <b>Paquetes Mtto</b> — Frecuencias por operación<br>• <b>Materiales</b> — Componentes y cantidades<br>• <b>Consolidado</b> — Vista unificada'
+      },
+      {
+        element: document.getElementById('tsec'),
+        title: '4 · Tabla interactiva',
+        intro: 'La tabla muestra los datos estructurados con <strong>búsqueda en tiempo real</strong>, <strong>filtro por archivo</strong> y <strong>ordenamiento</strong> haciendo clic en las cabeceras. La paginación maneja datasets muy grandes.'
+      },
+      {
+        element: document.getElementById('btn-excel'),
+        title: '5 · Exportar a Excel',
+        intro: 'Genera un <strong>Excel (.xlsx) con 5 hojas</strong>:<br>• <b>Cabecera</b> — Planes<br>• <b>Operaciones</b> — Con textos largos<br>• <b>Paquetes_Mtto</b> — Frecuencias<br>• <b>Materiales</b> — Códigos, descripción, cantidad y unidad<br>• <b>Consolidado</b> — Todo unificado'
+      },
+      {
+        element: document.getElementById('header-stats'),
+        title: '6 · Estadísticas en tiempo real',
+        intro: 'El encabezado muestra siempre el <strong>conteo total</strong> de planes, operaciones, paquetes y materiales de todos los archivos cargados. ¡Ya estás listo para procesar tus archivos IA10!'
+      }
+    ]
+  });
+  tour.start();
+}
+
+
+/* ════════════════════════════════════════════════════════
+   EVENT LISTENERS
+════════════════════════════════════════════════════════ */
+// Drop zone
+const dropArea = document.getElementById('drop-area');
+const fileInput = document.getElementById('file-input');
+
+dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('drag-over') });
+dropArea.addEventListener('dragleave', () => dropArea.classList.remove('drag-over'));
+dropArea.addEventListener('drop', e => {
+  e.preventDefault();
+  dropArea.classList.remove('drag-over');
+  if (e.dataTransfer.files.length) processFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', e => { if (e.target.files.length) processFiles(e.target.files); fileInput.value = '' });
+
+// File list remove buttons (delegated)
+document.getElementById('file-list').addEventListener('click', e => {
+  const btn = e.target.closest('[data-rm]');
+  if (!btn) return;
+  S.removeFile(btn.dataset.rm);
+  if (!S.files.length) S.clear();
+  refresh();
+});
+
+// Controls
+document.getElementById('btn-excel').addEventListener('click', () => {
+  if (!S.files.length) { toast('No hay datos para exportar', 'w'); return; }
+  exportExcel();
+});
+document.getElementById('btn-clear').addEventListener('click', () => {
+  S.clear();
+  document.getElementById('file-list').innerHTML = '';
+  refresh();
+  toast('Datos eliminados');
+});
+
+// Tabs
+document.getElementById('tabs').addEventListener('click', e => {
+  const tab = e.target.closest('[data-tab]');
+  if (!tab) return;
+  S.tab = tab.dataset.tab;
+  renderTabs();
+  renderTable();
+  renderTabCounts();
+});
+
+// Search
+document.getElementById('sinput').addEventListener('input', e => {
+  S.search = e.target.value;
+  renderTable();
+});
+
+// Archive filter
+document.getElementById('farchivo').addEventListener('change', e => {
+  S.farch = e.target.value;
+  renderTable();
+});
+
+// Table sort (delegated)
+document.getElementById('dthead').addEventListener('click', e => {
+  const th = e.target.closest('th[data-key]');
+  if (!th) return;
+  S.setSort(th.dataset.key);
+  renderTable();
+});
+
+// Pagination (delegated)
+document.getElementById('pagc').addEventListener('click', e => {
+  const btn = e.target.closest('[data-pg]');
+  if (!btn || btn.disabled) return;
+  const val = btn.dataset.pg;
+  const pages = Math.ceil(S.filtered(S.tab).length / S.PS);
+  if (val === 'prev') S.page = Math.max(1, S.page - 1);
+  else if (val === 'next') S.page = Math.min(pages, S.page + 1);
+  else S.page = parseInt(val, 10);
+  renderTable();
+  document.getElementById('tsec').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+// Tour button
+document.getElementById('tour-header-btn').addEventListener('click', startGuidedTour);
+
+// Empty state click
+document.getElementById('empty').addEventListener('click', () => fileInput.click());
+
+// Initial render
+refresh();
+</script>
+</body>
+</html>
