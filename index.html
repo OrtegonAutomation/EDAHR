@@ -489,7 +489,7 @@ code{font-family:'DM Mono',monospace;background:var(--bg-2);padding:1px 5px;bord
 </main>
 
 <!-- ─── SCRIPTS ──────────────────────────────────────── -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/intro.js@7.2.0/minified/intro.min.js"></script>
 <script>
 'use strict';
@@ -771,6 +771,8 @@ const COLS = {
     { key: 'extText',   label: 'Texto Largo', render: r => r.extText ? `<span class="et-cell" title="${esc(r.extText)}">${esc(r.extText)}</span>` : `<span class="dc-dim">—</span>` },
     { key: 'freqs',     label: 'Frecuencias', render: r => `<span class="dc text-wrap" style="font-size:11px">${esc(r.freqs)}</span>` },
     { key: 'numMats',   label: '# Mat.', render: r => `<span class="cnt-badge ${r.numMats > 0 ? 'has-mats' : ''}">${r.numMats}</span>` },
+    { key: 'mats',      label: 'Materiales', render: r => `<span class="dc text-wrap" style="font-size:11px">${esc(r.mats)}</span>` },
+    { key: 'numPasos',  label: '# Pasos', render: r => r.numPasos > 0 ? `<span class="cnt-badge has-steps">${r.numPasos}</span>` : `<span class="cnt-badge">0</span>` },
     { key: 'filename',  label: 'Archivo', render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
   ]
 };
@@ -1030,17 +1032,33 @@ function styleSheet(ws, data, colWidths) {
   // Column widths
   ws['!cols'] = colWidths.map(w => ({ wch: w }));
 
+  const borderThin = {
+    top:    { style: 'thin', color: { rgb: 'D9E1EA' } },
+    right:  { style: 'thin', color: { rgb: 'D9E1EA' } },
+    bottom: { style: 'thin', color: { rgb: 'D9E1EA' } },
+    left:   { style: 'thin', color: { rgb: 'D9E1EA' } }
+  };
+
+  const borderHeader = {
+    top:    { style: 'thin', color: { rgb: 'A9B7C8' } },
+    right:  { style: 'thin', color: { rgb: 'A9B7C8' } },
+    bottom: { style: 'medium', color: { rgb: '7E90A8' } },
+    left:   { style: 'thin', color: { rgb: 'A9B7C8' } }
+  };
+
   // Header style
   const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
   for (let c = range.s.c; c <= range.e.c; c++) {
     const addr = XLSX.utils.encode_cell({ r: 0, c });
     if (!ws[addr]) continue;
     ws[addr].s = {
-      font:    { bold: true, color: { rgb: 'FFFFFF' }, sz: 10 },
-      fill:    { fgColor: { rgb: '1B2A47' } },
-      alignment: { vertical: 'center', wrapText: false }
+      font:      { bold: true, color: { rgb: 'FFFFFF' }, sz: 10, name: 'Calibri' },
+      fill:      { fgColor: { rgb: '1B2A47' } },
+      border:    borderHeader,
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: false }
     };
   }
+
   // Data rows alternating
   for (let r = 1; r <= range.e.r; r++) {
     for (let c = range.s.c; c <= range.e.c; c++) {
@@ -1048,11 +1066,18 @@ function styleSheet(ws, data, colWidths) {
       if (!ws[addr]) continue;
       ws[addr].s = {
         fill:      { fgColor: { rgb: r % 2 === 0 ? 'F7F8FA' : 'FFFFFF' } },
-        alignment: { vertical: 'center', wrapText: true },
-        font:      { sz: 10 }
+        border:    borderThin,
+        alignment: { vertical: 'top', wrapText: true },
+        font:      { sz: 10, name: 'Calibri', color: { rgb: '1F2937' } }
       };
     }
   }
+
+  // Autofilter and row heights
+  ws['!autofilter'] = { ref: ws['!ref'] };
+  ws['!rows'] = (ws['!rows'] || []);
+  ws['!rows'][0] = { hpt: 20 };
+
   // Freeze first row
   ws['!freeze'] = { xSplit: 0, ySplit: 1 };
 }
