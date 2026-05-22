@@ -656,7 +656,32 @@ const S = (() => {
       case 'operaciones': return _ops().map(o => ({ planCode: o.planCode, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, extText: o.extendedText, numFreqs: o.frequencies.length, numMats: o.materials.length, numPasos: (o.steps||[]).length, filename: o.filename }));
       case 'paquetes':    return _freqs();
       case 'materiales':  return _mats();
-      case 'consolidado': return _ops().map(o => ({ planCode: o.planCode, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, extText: o.extendedText, freqs: o.frequencies.map(f => `${f.code} – ${f.name}`).join('; ') || '—', numFreqs: o.frequencies.length, mats: o.materials.map(m => `[${m.code}] ${m.description}${m.qty ? ` (${m.qty} ${m.unit})` : ''}`).join('; ') || '—', numMats: o.materials.length, numPasos: (o.steps||[]).length, filename: o.filename }));
+      case 'consolidado': return _ops().flatMap(o => {
+        const base = {
+          planCode: o.planCode,
+          planDesc: o.planDesc,
+          opNum: o.number,
+          opDesc: o.description,
+          extText: o.extendedText,
+          freqs: o.frequencies.map(f => `${f.code} – ${f.name}`).join('; ') || '—',
+          numFreqs: o.frequencies.length,
+          numMats: o.materials.length,
+          numPasos: (o.steps || []).length,
+          filename: o.filename
+        };
+
+        if (!o.materials.length) {
+          return [{ ...base, matCode: '—', matDesc: '—', qty: '', unit: '' }];
+        }
+
+        return o.materials.map(m => ({
+          ...base,
+          matCode: m.code,
+          matDesc: m.description,
+          qty: m.qty,
+          unit: m.unit
+        }));
+      });
       default: return [];
     }
   }
@@ -770,8 +795,11 @@ const COLS = {
     { key: 'opDesc',    label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
     { key: 'extText',   label: 'Texto Largo', render: r => r.extText ? `<span class="et-cell" title="${esc(r.extText)}">${esc(r.extText)}</span>` : `<span class="dc-dim">—</span>` },
     { key: 'freqs',     label: 'Frecuencias', render: r => `<span class="dc text-wrap" style="font-size:11px">${esc(r.freqs)}</span>` },
+    { key: 'matCode',   label: 'Código Material', render: r => r.matCode !== '—' ? `<span class="mat-badge">${esc(r.matCode)}</span>` : `<span class="dc-dim">—</span>` },
+    { key: 'matDesc',   label: 'Descripción Material', render: r => `<span class="dc text-wrap">${esc(r.matDesc)}</span>` },
+    { key: 'qty',       label: 'Cant.', render: r => `<span class="qty-cell">${esc(r.qty) || '—'}</span>` },
+    { key: 'unit',      label: 'Und.', render: r => `<span class="unit-cell">${esc(r.unit) || '—'}</span>` },
     { key: 'numMats',   label: '# Mat.', render: r => `<span class="cnt-badge ${r.numMats > 0 ? 'has-mats' : ''}">${r.numMats}</span>` },
-    { key: 'mats',      label: 'Materiales', render: r => `<span class="dc text-wrap" style="font-size:11px">${esc(r.mats)}</span>` },
     { key: 'numPasos',  label: '# Pasos', render: r => r.numPasos > 0 ? `<span class="cnt-badge has-steps">${r.numPasos}</span>` : `<span class="cnt-badge">0</span>` },
     { key: 'filename',  label: 'Archivo', render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
   ]
@@ -1015,11 +1043,11 @@ function exportExcel() {
   // ─ Sheet 5: Consolidado ──────────────────────────────
   const conData = S.rows('consolidado');
   const conAoA = [
-    ['Código Plan', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Frecuencias / Paquetes', '# Mat.', 'Materiales', '# Pasos', 'Archivo'],
-    ...conData.map(r => [r.planCode, r.planDesc, r.opNum, r.opDesc, r.extText, r.freqs === '—' ? '' : r.freqs, r.numMats, r.mats === '—' ? '' : r.mats, r.numPasos, r.filename])
+    ['Código Plan', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Frecuencias / Paquetes', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', '# Mat.', '# Pasos', 'Archivo'],
+    ...conData.map(r => [r.planCode, r.planDesc, r.opNum, r.opDesc, r.extText, r.freqs === '—' ? '' : r.freqs, r.matCode === '—' ? '' : r.matCode, r.matDesc === '—' ? '' : r.matDesc, r.qty, r.unit, r.numMats, r.numPasos, r.filename])
   ];
   const wsCon = XLSX.utils.aoa_to_sheet(conAoA);
-  styleSheet(wsCon, conAoA, [14, 40, 11, 44, 44, 44, 8, 60, 8, 30]);
+  styleSheet(wsCon, conAoA, [14, 36, 11, 40, 40, 34, 14, 42, 10, 8, 8, 8, 30]);
   XLSX.utils.book_append_sheet(wb, wsCon, 'Consolidado');
 
   // Write file
