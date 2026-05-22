@@ -563,11 +563,12 @@ const IA10Parser = (() => {
         continue;
       }
 
-      // ── FREQUENCY or MATERIAL (col 6, |---) ──────────
+      // ── FREQUENCY / STEP / MATERIAL (nested tree, |---) ─
       // Frequency:  "      |---   01      Mensual"
       // Material:   "      |---   1000007                   Tubo..."
-      if (/^      \|---/.test(raw)) {
-        const m = raw.match(/^      \|---\s+(\S+)\s+([\s\S]*)$/);
+      // Also supports lines like: "  |   |---   04      Semestral"
+      if (/^\s*\|(?:\s*\|)*---/.test(raw)) {
+        const m = raw.match(/^\s*\|(?:\s*\|)*---\s+(\S+)\s+([\s\S]*)$/);
         if (m && currentOp) {
           const code = m[1].trim();
           const rest = m[2];
@@ -591,13 +592,19 @@ const IA10Parser = (() => {
       }
 
       // ── MATERIAL QTY/UNIT continuation ───────────────
+      // Examples:
       // "      |                      1  UN"
-      if (/^      \|/.test(raw) && lastMat && !/^      \|---/.test(raw) && !/^      \|--/.test(raw)) {
-        const m = raw.match(/^      \|\s{5,}(\d+(?:[.,]\d+)?)\s+([A-Za-z]{1,5})\s*$/);
+      // "  |   |                      1  UN"
+      if (lastMat) {
+        const m = raw.match(/^\s*\|(?:\s*\|)*\s{5,}(\d+(?:[.,]\d+)?)\s+([A-Za-z]{1,5})\s*$/);
         if (m) {
           lastMat.qty  = m[1];
           lastMat.unit = m[2].toUpperCase();
+          continue;
         }
+      }
+
+      if (/^\s*\|(?:\s*\|)*(?:--|---)/.test(raw)) {
         continue;
       }
 
