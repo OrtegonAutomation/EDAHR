@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IA10 · Hojas de Ruta SAP</title>
+  <title>IA10 / IA17 · Hojas de Ruta SAP</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -217,6 +217,12 @@ code{font-family:'DM Mono',monospace;background:var(--bg-2);padding:1px 5px;bord
 .et-cell{font-size:11px;color:var(--text-2);font-style:italic;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .qty-cell{font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--text)}
 .unit-cell{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-3)}
+.wc-badge{display:inline-flex;align-items:center;background:var(--teal-lo);color:oklch(34% 0.15 190);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;font-family:'DM Mono',monospace;white-space:nowrap}
+.ck-badge{display:inline-flex;align-items:center;background:var(--blue-lo);color:oklch(34% 0.16 265);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;font-family:'DM Mono',monospace;white-space:nowrap}
+.lt-lines{display:inline-block;margin-left:6px;background:var(--bg-2);color:var(--text-3);border-radius:3px;padding:1px 5px;font-size:9px;font-weight:600;white-space:nowrap;vertical-align:middle}
+.fmt-badge{display:inline-flex;align-items:center;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;letter-spacing:.3px}
+.fmt-ia10{background:var(--amber-lo);color:oklch(36% 0.1 68)}
+.fmt-ia17{background:var(--teal-lo);color:oklch(34% 0.15 190)}
 
 /* Pagination */
 #pag{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);background:var(--bg);flex-wrap:wrap;gap:8px}
@@ -286,7 +292,7 @@ code{font-family:'DM Mono',monospace;background:var(--bg-2);padding:1px 5px;bord
       <circle cx="38" cy="38" r="7" fill="var(--amber)"/>
       <circle cx="38" cy="38" r="3" fill="oklch(16% 0.04 252)"/>
     </svg>
-    <span id="l-title">Analizando archivos IA10…</span>
+    <span id="l-title">Analizando archivos…</span>
     <span id="l-fname"></span>
     <div id="l-bar-wrap"><div id="l-bar"></div></div>
     <span id="l-counter"></span>
@@ -328,13 +334,13 @@ code{font-family:'DM Mono',monospace;background:var(--bg-2);padding:1px 5px;bord
     </svg>
     <div class="htitle">
       <div class="htitle-row">
-        <h1>IA10 · Hojas de Ruta SAP</h1>
+        <h1>IA10 / IA17 · Hojas de Ruta SAP</h1>
         <button id="tour-header-btn" type="button" title="Iniciar tour guiado">
           <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13V3l12 5-12 5z"/></svg>
           Tour guiado
         </button>
       </div>
-      <p>Transacción IA10 · Parser, estructurador y exportador de planes de mantenimiento</p>
+      <p>Transacciones IA10 e IA17 · Parser, estructurador y exportador de planes de mantenimiento</p>
     </div>
   </div>
   <div id="header-stats">
@@ -342,6 +348,7 @@ code{font-family:'DM Mono',monospace;background:var(--bg-2);padding:1px 5px;bord
     <div class="hstat"><span class="hstat-v" id="hs-ops">0</span><span class="hstat-l">Operaciones</span></div>
     <div class="hstat"><span class="hstat-v" id="hs-pkgs">0</span><span class="hstat-l">Paquetes</span></div>
     <div class="hstat"><span class="hstat-v" id="hs-mats">0</span><span class="hstat-l">Materiales</span></div>
+    <div class="hstat"><span class="hstat-v" id="hs-hrs">0</span><span class="hstat-l">Horas Trab.</span></div>
   </div>
 </header>
 
@@ -388,11 +395,11 @@ code{font-family:'DM Mono',monospace;background:var(--bg-2);padding:1px 5px;bord
         <circle cx="93" cy="30" r="1.5" fill="var(--green)" opacity=".4" style="animation:pulse 2.4s .8s ease-in-out infinite"/>
         <circle cx="14" cy="44" r="1.5" fill="var(--purple)" opacity=".4" style="animation:pulse 2.2s 1.2s ease-in-out infinite"/>
       </svg>
-      <div class="drop-title">Arrastra los archivos TXT de IA10 aquí</div>
-      <div class="drop-sub">o haz clic para seleccionar · Múltiples archivos soportados</div>
+      <div class="drop-title">Arrastra los archivos TXT de IA10 o IA17 aquí</div>
+      <div class="drop-sub">o haz clic para seleccionar · El formato se detecta automáticamente · Múltiples archivos soportados</div>
       <div class="drop-hint">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 4v5M8 11.5v.5"/></svg>
-        Exporta el IA10 como archivo .txt en texto plano (no convertido) · Codificación Windows-1252
+        Exporta el reporte como archivo .txt en texto plano (no convertido) · Codificación Windows-1252
       </div>
     </div>
     <div id="file-list"></div>
@@ -472,8 +479,8 @@ code{font-family:'DM Mono',monospace;background:var(--bg-2);padding:1px 5px;bord
           <rect x="44" y="52" width="28" height="2" rx="1" fill="oklch(84% 0.02 252)" style="animation:pulse 2s .9s ease-in-out infinite"/>
           <rect x="47" y="58" width="18" height="2" rx="1" fill="oklch(84% 0.02 252)" style="animation:pulse 2s 1.2s ease-in-out infinite"/>
         </svg>
-        <p>Carga los archivos TXT de IA10 para comenzar</p>
-        <span>Soporta múltiples archivos · 5 hojas en Excel: Cabecera, Operaciones, Paquetes, Materiales y Consolidado</span>
+        <p>Carga los archivos TXT de IA10 o IA17 para comenzar</p>
+        <span>Detección automática de formato · 5 hojas en Excel: Cabecera, Operaciones, Paquetes, Materiales y Consolidado</span>
       </div>
       <table id="dtable" style="display:none">
         <thead id="dthead"></thead>
@@ -507,6 +514,26 @@ code{font-family:'DM Mono',monospace;background:var(--bg-2);padding:1px 5px;bord
 ════════════════════════════════════════════════════════ */
 const IA10Parser = (() => {
 
+  /* ── Detección de formato ─────────────────────────────
+     IA10 → árbol ASCII con "|--" / "|---"
+     IA17 → "Lista de impresión de la hoja de ruta" + "Hoja de ruta CODE  N"
+  ──────────────────────────────────────────────────── */
+  function detectFormat(text) {
+    const head = text.slice(0, 20000);
+    if (/^Hoja de ruta\s+\S/m.test(head) || /Lista de impresi[óo]n de la hoja de ruta/i.test(head)) return 'IA17';
+    if (/^\s{2}\|-{2,}/m.test(head)) return 'IA10';
+    // Fallback: si hay líneas "Operación NNNN" sin pipes, es IA17
+    if (/^\s*Operaci[óo]n\s+\d{4}\s/m.test(head)) return 'IA17';
+    return 'IA10';
+  }
+
+  function parse(text, filename) {
+    const format = detectFormat(text);
+    return format === 'IA17'
+      ? parseIA17(text, filename)
+      : parseIA10(text, filename);
+  }
+
   function parseIA10(text, filename) {
     const lines = text.split(/\r?\n/);
     const plans = [];
@@ -530,8 +557,10 @@ const IA10Parser = (() => {
           currentPlan = {
             code: m[1].trim(),
             description: m[2].trim(),
+            counter: '', strategy: '', usage: '', status: '', workCenter: '', assemblyType: '',
             operations: [],
-            filename
+            filename,
+            format: 'IA10'
           };
           plans.push(currentPlan);
           currentOp = null;
@@ -553,7 +582,9 @@ const IA10Parser = (() => {
             extendedText: '',
             frequencies: [],
             materials:   [],
-            steps:       []
+            steps:       [],
+            workCenter: '', controlKey: '', numPersons: '',
+            work: '', workUnit: '', duration: '', durationUnit: ''
           };
           currentPlan.operations.push(currentOp);
           lastMat = null;
@@ -625,10 +656,222 @@ const IA10Parser = (() => {
       }
     }
 
-    return { plans, warns, filename };
+    return { plans, warns, filename, format: 'IA10' };
   }
 
-  return { parseIA10 };
+
+  /* ════════════════════════════════════════════════════
+     IA17 PARSER — Lista de impresión de la hoja de ruta
+     ──────────────────────────────────────────────────
+     Estructura:
+     ─ Cabecera:   "Hoja de ruta CEDE-TR  4      Descripción"
+                   "     Estrategia  E09      Tp.montaje"
+                   "     Utilización 4        Status   4"
+                   "     Centro      RB01"
+     ─ Operación:  " Operación   0010    Descripción"
+     ─ Texto largo: líneas indentadas bajo la operación
+     ─ Mano obra:  "     Puesto de trabajo  TR3ELECT"
+                   "     Clave de control   PM01"
+                   "     Número de personas  1"
+                   "     Trabajo            0,1  H"
+                   "     Duración           0,1  H"
+     ─ Paquete:    "  Paq.mant.  05  5H     750 Horas"
+  ════════════════════════════════════════════════════ */
+
+  // Encabezado/pie de página que se repite en cada página del listado
+  const IA17_NOISE = [
+    /^\s*-{20,}\s*$/,                                     // separadores
+    /Lista de impresi[óo]n de la hoja de ruta/i,          // título de página (incluye fecha y n° de página)
+    /^\s*P[áa]gina\s+\d+/i,
+    /^\f/                                                 // salto de página
+  ];
+
+  function isIA17Noise(line) {
+    return IA17_NOISE.some(rx => rx.test(line));
+  }
+
+  // Normaliza "0,1" → 0.1 conservando también el texto original
+  function parseHours(s) {
+    if (s == null || s === '') return null;
+    const n = parseFloat(String(s).replace(',', '.'));
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function newIA17Op(number, description) {
+    return {
+      number, description,
+      extendedText: '',
+      _textLines: [],
+      frequencies: [],
+      materials: [],
+      steps: [],
+      workCenter: '',      // Puesto de trabajo
+      controlKey: '',      // Clave de control
+      numPersons: '',      // Número de personas
+      work: '',            // Trabajo (horas)
+      workUnit: '',
+      duration: '',        // Duración (horas)
+      durationUnit: ''
+    };
+  }
+
+  // Cierra la operación: consolida su texto largo conservando saltos de línea
+  function finishIA17Op(op) {
+    if (!op || !op._textLines) return;
+    const lines = op._textLines;
+    // recorta líneas en blanco al inicio y al final
+    while (lines.length && !lines[0].trim()) lines.shift();
+    while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
+    // colapsa 3+ líneas en blanco consecutivas a una sola
+    const out = [];
+    let blanks = 0;
+    for (const l of lines) {
+      if (!l.trim()) { blanks++; if (blanks > 1) continue; }
+      else blanks = 0;
+      out.push(l);
+    }
+    op.extendedText = out.join('\n');
+    delete op._textLines;
+  }
+
+  function parseIA17(text, filename) {
+    const lines = text.split(/\r?\n/);
+    const plans = [];
+    const warns = [];
+    let currentPlan = null;
+    let currentOp   = null;
+    // Indentación del bloque de texto largo, para des-indentar sin perder la
+    // sangría relativa de los checklists.
+    let textIndent  = null;
+
+    for (let i = 0; i < lines.length; i++) {
+      const raw = lines[i].replace(/\s+$/, '');
+
+      if (isIA17Noise(raw)) continue;
+
+      // ── CABECERA DE HOJA DE RUTA ────────────────────
+      // "Hoja de ruta CEDE-TR  4           PVO MOT COMBUST INTERNA MAK 16CM32C"
+      let m = raw.match(/^Hoja de ruta\s+(\S+)\s+(\d+)\s+(.*)$/);
+      if (m) {
+        finishIA17Op(currentOp);
+        currentOp = null;
+        // El encabezado se repite en cada página del listado: si es la misma
+        // hoja de ruta, se continúa la existente en vez de duplicarla.
+        const existing = plans.find(p => p.code === m[1].trim() && p.counter === m[2].trim());
+        if (existing) { currentPlan = existing; continue; }
+        currentPlan = {
+          code:        m[1].trim(),          // grupo de hojas de ruta
+          counter:     m[2].trim(),          // contador de grupo
+          description: m[3].trim(),
+          strategy:    '',
+          usage:       '',
+          status:      '',
+          workCenter:  '',
+          assemblyType:'',
+          operations:  [],
+          filename,
+          format: 'IA17'
+        };
+        plans.push(currentPlan);
+        continue;
+      }
+
+      // ── OPERACIÓN ───────────────────────────────────
+      // " Operación   0010                 Alistamiento Del Trabajo"
+      m = raw.match(/^\s*Operaci[óo]n\s+(\d{4})\s+(.*)$/);
+      if (m) {
+        if (!currentPlan) {
+          warns.push({ linea: i+1, texto: raw.trim().slice(0, 80), razon: 'Operación sin hoja de ruta previa' });
+          continue;
+        }
+        finishIA17Op(currentOp);
+        // Una operación puede continuar tras un salto de página, repitiendo su
+        // línea "Operación NNNN": se reanuda la existente en vez de duplicarla.
+        const prev = currentPlan.operations.find(o => o.number === m[1].trim());
+        if (prev) {
+          prev._textLines = prev.extendedText ? prev.extendedText.split('\n') : [];
+          currentOp = prev;
+        } else {
+          currentOp = newIA17Op(m[1].trim(), m[2].trim());
+          currentPlan.operations.push(currentOp);
+        }
+        textIndent = null;
+        continue;
+      }
+
+      // ── PAQUETE DE MANTENIMIENTO ────────────────────
+      // "  Paq.mant.  05  5H               750 Horas"
+      m = raw.match(/^\s*Paq\.?\s*mant\.?\s+(\S+)\s+(\S+)\s+(.*)$/i);
+      if (m && currentOp) {
+        currentOp.frequencies.push({
+          code: m[1].trim(),          // 05
+          short: m[2].trim(),         // 5H
+          name: m[3].trim()           // 750 Horas
+        });
+        continue;
+      }
+
+      // ── CAMPOS DE CABECERA (antes de la 1ª operación) ─
+      if (currentPlan && !currentOp) {
+        // "Estrategia      E09            Tp.montaje"
+        m = raw.match(/^\s*Estrategia\s+(\S+)(?:\s+Tp\.montaje\s*(.*))?$/i);
+        if (m) { currentPlan.strategy = m[1].trim(); currentPlan.assemblyType = (m[2] || '').trim(); continue; }
+        // "Tp.montaje" en línea propia
+        m = raw.match(/^\s*Tp\.montaje\s+(\S+)\s*$/i);
+        if (m) { currentPlan.assemblyType = m[1].trim(); continue; }
+        // "Utilización     4              Status         4"
+        m = raw.match(/^\s*Utilizaci[óo]n\s+(\S+)(?:\s+Status\s+(\S+))?\s*$/i);
+        if (m) { currentPlan.usage = m[1].trim(); if (m[2]) currentPlan.status = m[2].trim(); continue; }
+        m = raw.match(/^\s*Status\s+(\S+)\s*$/i);
+        if (m) { currentPlan.status = m[1].trim(); continue; }
+        // "Centro          RB01"
+        m = raw.match(/^\s*Centro\s+(\S+)\s*$/i);
+        if (m) { currentPlan.workCenter = m[1].trim(); continue; }
+      }
+
+      if (!currentOp) continue;
+
+      // ── MANO DE OBRA (dentro de la operación) ───────
+      m = raw.match(/^\s*Puesto de trabajo\s+(\S+)\s*$/i);
+      if (m) { currentOp.workCenter = m[1].trim(); continue; }
+
+      m = raw.match(/^\s*Clave de control\s+(\S+)\s*$/i);
+      if (m) { currentOp.controlKey = m[1].trim(); continue; }
+
+      m = raw.match(/^\s*N[úu]mero de personas\s+(\d+)\s*$/i);
+      if (m) { currentOp.numPersons = m[1].trim(); continue; }
+
+      // "Trabajo                   0,1  H"
+      m = raw.match(/^\s*Trabajo\s+([\d.,]+)\s*([A-Za-z]{1,4})?\s*$/i);
+      if (m) { currentOp.work = m[1].trim(); currentOp.workUnit = (m[2] || 'H').toUpperCase(); continue; }
+
+      // "Duración                  0,1  H"
+      m = raw.match(/^\s*Duraci[óo]n\s+([\d.,]+)\s*([A-Za-z]{1,4})?\s*$/i);
+      if (m) { currentOp.duration = m[1].trim(); currentOp.durationUnit = (m[2] || 'H').toUpperCase(); continue; }
+
+      // ── TEXTO LARGO ─────────────────────────────────
+      // Todo lo demás dentro de la operación es texto descriptivo.
+      // Se conservan los saltos de línea y la sangría relativa.
+      if (!raw.trim()) {
+        // sólo guardamos blancos si ya hay contenido (evita blancos iniciales)
+        if (currentOp._textLines.length) currentOp._textLines.push('');
+        continue;
+      }
+      const indent = raw.length - raw.replace(/^\s+/, '').length;
+      if (textIndent === null || indent < textIndent) textIndent = indent;
+      currentOp._textLines.push(raw.slice(textIndent));
+    }
+
+    finishIA17Op(currentOp);
+
+    if (!plans.length) {
+      warns.push({ linea: 0, texto: filename, razon: 'No se encontró ninguna hoja de ruta en el archivo' });
+    }
+
+    return { plans, warns, filename, format: 'IA17' };
+  }
+
+  return { parse, parseIA10, parseIA17, detectFormat };
 })();
 
 
@@ -646,14 +889,41 @@ const S = (() => {
   let _sortAsc = true;
   const PS = 100;
 
-  function _ops()  { return _plans.flatMap(p => p.operations.map(o => ({ ...o, planDesc: p.description, planCode2: p.code, filename: p.filename }))); }
-  function _freqs(){ return _ops().flatMap(o => o.frequencies.map(f => ({ planCode: o.planCode, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, pkgCode: f.code, frequency: f.name, filename: o.filename }))); }
+  function _ops()  {
+    return _plans.flatMap(p => p.operations.map(o => ({
+      ...o,
+      // IA17 no repite el código de plan en cada operación: se hereda de la cabecera
+      planCode: o.planCode || p.code,
+      planDesc: p.description,
+      planCode2: p.code,
+      counter: p.counter || '',
+      format: p.format || 'IA10',
+      filename: p.filename
+    })));
+  }
+  function _freqs(){ return _ops().flatMap(o => o.frequencies.map(f => ({ planCode: o.planCode, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, pkgCode: f.code, pkgShort: f.short || '', frequency: f.name, filename: o.filename }))); }
   function _mats() { return _ops().flatMap(o => o.materials.map(m => ({ planCode: o.planCode, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, matCode: m.code, matDesc: m.description, qty: m.qty, unit: m.unit, filename: o.filename }))); }
 
   function rows(tab) {
     switch (tab) {
-      case 'cabecera':    return _plans.map(p => ({ planCode: p.code, description: p.description, numOps: p.operations.length, filename: p.filename }));
-      case 'operaciones': return _ops().map(o => ({ planCode: o.planCode, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, extText: o.extendedText, numFreqs: o.frequencies.length, numMats: o.materials.length, numPasos: (o.steps||[]).length, filename: o.filename }));
+      case 'cabecera':    return _plans.map(p => ({
+        planCode: p.code,
+        counter: p.counter || '',
+        description: p.description,
+        strategy: p.strategy || '',
+        usage: p.usage || '',
+        status: p.status || '',
+        centro: p.workCenter || '',
+        numOps: p.operations.length,
+        filename: p.filename
+      }));
+      case 'operaciones': return _ops().map(o => ({
+        planCode: o.planCode, opNum: o.number, opDesc: o.description, extText: o.extendedText,
+        workCenter: o.workCenter || '', controlKey: o.controlKey || '', numPersons: o.numPersons || '',
+        work: o.work || '', duration: o.duration || '',
+        numFreqs: o.frequencies.length, numMats: o.materials.length, numPasos: (o.steps||[]).length,
+        filename: o.filename
+      }));
       case 'paquetes':    return _freqs();
       case 'materiales':  return _mats();
       case 'consolidado': return _ops().flatMap(o => {
@@ -663,7 +933,12 @@ const S = (() => {
           opNum: o.number,
           opDesc: o.description,
           extText: o.extendedText,
-          freqs: o.frequencies.map(f => `${f.code} – ${f.name}`).join('; ') || '—',
+          freqs: o.frequencies.map(f => `${f.code}${f.short ? ' ' + f.short : ''} – ${f.name}`).join('; ') || '—',
+          workCenter: o.workCenter || '',
+          controlKey: o.controlKey || '',
+          numPersons: o.numPersons || '',
+          work: o.work || '',
+          duration: o.duration || '',
           numFreqs: o.frequencies.length,
           numMats: o.materials.length,
           numPasos: (o.steps || []).length,
@@ -718,7 +993,7 @@ const S = (() => {
       _plans = _plans.filter(p => p.filename !== data.filename);
       _plans.push(...data.plans);
       const idx = _files.findIndex(f => f.filename === data.filename);
-      const meta = { filename: data.filename, plans: data.plans.length, warns: data.warns.length, allWarns: data.warns };
+      const meta = { filename: data.filename, format: data.format || 'IA10', plans: data.plans.length, warns: data.warns.length, allWarns: data.warns };
       if (idx > -1) _files.splice(idx, 1, meta); else _files.push(meta);
     },
     removeFile(fn) {
@@ -732,7 +1007,8 @@ const S = (() => {
         plans:  _plans.length,
         ops:    _ops().length,
         pkgs:   _freqs().length,
-        mats:   _mats().length
+        mats:   _mats().length,
+        hours:  _ops().reduce((a, o) => a + (parseFloat(String(o.work || '0').replace(',', '.')) || 0), 0)
       };
     },
     get counts() {
@@ -756,7 +1032,12 @@ const S = (() => {
 const COLS = {
   cabecera: [
     { key: 'planCode',    label: 'Código Plan',      render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'counter',     label: 'Contador',         render: r => dash(r.counter, `<span class="cc">${esc(r.counter)}</span>`) },
     { key: 'description', label: 'Descripción Plan', render: r => `<span class="dc text-wrap">${esc(r.description)}</span>` },
+    { key: 'strategy',    label: 'Estrategia',       render: r => dash(r.strategy, `<span class="cc">${esc(r.strategy)}</span>`) },
+    { key: 'usage',       label: 'Utilización',      render: r => dash(r.usage, `<span class="cc">${esc(r.usage)}</span>`) },
+    { key: 'status',      label: 'Status',           render: r => dash(r.status, `<span class="cc">${esc(r.status)}</span>`) },
+    { key: 'centro',      label: 'Centro',           render: r => dash(r.centro, `<span class="cc">${esc(r.centro)}</span>`) },
     { key: 'numOps',      label: '# Operaciones',    render: r => `<span class="num-cell">${r.numOps}</span>` },
     { key: 'filename',    label: 'Archivo',          render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
   ],
@@ -764,7 +1045,12 @@ const COLS = {
     { key: 'planCode', label: 'Código Plan', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
     { key: 'opNum',    label: 'N° Op.',      render: r => `<span class="cc">${esc(r.opNum)}</span>` },
     { key: 'opDesc',   label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
-    { key: 'extText',  label: 'Texto Largo', render: r => r.extText ? `<span class="et-cell" title="${esc(r.extText)}">${esc(r.extText)}</span>` : `<span class="dc-dim">—</span>` },
+    { key: 'extText',  label: 'Texto Largo', render: r => renderLongText(r.extText) },
+    { key: 'workCenter',label: 'Puesto Trab.', render: r => dash(r.workCenter, `<span class="wc-badge">${esc(r.workCenter)}</span>`) },
+    { key: 'controlKey',label: 'Clave Ctrl.',  render: r => dash(r.controlKey, `<span class="ck-badge">${esc(r.controlKey)}</span>`) },
+    { key: 'numPersons',label: '# Pers.',      render: r => dash(r.numPersons, `<span class="num-cell">${esc(r.numPersons)}</span>`) },
+    { key: 'work',     label: 'Trabajo (H)',  render: r => dash(r.work, `<span class="qty-cell">${esc(r.work)}</span>`) },
+    { key: 'duration', label: 'Duración (H)', render: r => dash(r.duration, `<span class="qty-cell">${esc(r.duration)}</span>`) },
     { key: 'numFreqs', label: '# Paquetes',  render: r => `<span class="cnt-badge ${r.numFreqs > 0 ? 'has-freqs' : ''}">${r.numFreqs}</span>` },
     { key: 'numMats',  label: '# Materiales',render: r => `<span class="cnt-badge ${r.numMats  > 0 ? 'has-mats'  : ''}">${r.numMats}</span>`  },
     { key: 'numPasos', label: '# Pasos',     render: r => r.numPasos > 0 ? `<span class="cnt-badge has-steps">${r.numPasos}</span>` : `<span class="cnt-badge">0</span>` },
@@ -775,6 +1061,7 @@ const COLS = {
     { key: 'opNum',      label: 'N° Op.',      render: r => `<span class="cc">${esc(r.opNum)}</span>` },
     { key: 'opDesc',     label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
     { key: 'pkgCode',    label: 'N° Paquete',  render: r => `<span class="cc">${esc(r.pkgCode)}</span>` },
+    { key: 'pkgShort',   label: 'Abrev.',      render: r => dash(r.pkgShort, `<span class="cc">${esc(r.pkgShort)}</span>`) },
     { key: 'frequency',  label: 'Frecuencia',  render: r => `<span class="freq-badge"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>${esc(r.frequency)}</span>` },
     { key: 'filename',   label: 'Archivo', render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
   ],
@@ -793,8 +1080,13 @@ const COLS = {
     { key: 'planDesc',  label: 'Descripción Plan', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
     { key: 'opNum',     label: 'N° Op.',  render: r => `<span class="cc">${esc(r.opNum)}</span>` },
     { key: 'opDesc',    label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
-    { key: 'extText',   label: 'Texto Largo', render: r => r.extText ? `<span class="et-cell" title="${esc(r.extText)}">${esc(r.extText)}</span>` : `<span class="dc-dim">—</span>` },
+    { key: 'extText',   label: 'Texto Largo', render: r => renderLongText(r.extText) },
     { key: 'freqs',     label: 'Frecuencias', render: r => `<span class="dc text-wrap" style="font-size:11px">${esc(r.freqs)}</span>` },
+    { key: 'workCenter',label: 'Puesto Trab.', render: r => dash(r.workCenter, `<span class="wc-badge">${esc(r.workCenter)}</span>`) },
+    { key: 'controlKey',label: 'Clave Ctrl.',  render: r => dash(r.controlKey, `<span class="ck-badge">${esc(r.controlKey)}</span>`) },
+    { key: 'numPersons',label: '# Pers.',      render: r => dash(r.numPersons, `<span class="num-cell">${esc(r.numPersons)}</span>`) },
+    { key: 'work',      label: 'Trabajo (H)',  render: r => dash(r.work, `<span class="qty-cell">${esc(r.work)}</span>`) },
+    { key: 'duration',  label: 'Duración (H)', render: r => dash(r.duration, `<span class="qty-cell">${esc(r.duration)}</span>`) },
     { key: 'matCode',   label: 'Código Material', render: r => r.matCode !== '—' ? `<span class="mat-badge">${esc(r.matCode)}</span>` : `<span class="dc-dim">—</span>` },
     { key: 'matDesc',   label: 'Descripción Material', render: r => `<span class="dc text-wrap">${esc(r.matDesc)}</span>` },
     { key: 'qty',       label: 'Cant.', render: r => `<span class="qty-cell">${esc(r.qty) || '—'}</span>` },
@@ -813,6 +1105,21 @@ function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// Celda vacía → guion largo atenuado; con valor → el HTML indicado
+function dash(v, html) {
+  return (v === '' || v == null) ? `<span class="dc-dim">—</span>` : html;
+}
+
+// El texto largo del IA17 conserva saltos de línea (checklists, formatos).
+// En la tabla se muestra recortado; el texto íntegro va en el tooltip.
+function renderLongText(txt) {
+  if (!txt) return `<span class="dc-dim">—</span>`;
+  const oneLine = txt.replace(/\s*\n\s*/g, ' ').trim();
+  const lines = txt.split('\n').length;
+  const badge = lines > 1 ? `<span class="lt-lines">${lines} líneas</span>` : '';
+  return `<span class="et-cell" title="${esc(txt)}">${esc(oneLine)}</span>${badge}`;
+}
+
 let _toastTimer = null;
 function toast(msg, type = 'n') {
   const el = document.getElementById('toast');
@@ -826,7 +1133,7 @@ function toast(msg, type = 'n') {
   _toastTimer = setTimeout(() => el.classList.add('hidden'), 3400);
 }
 
-function showLoading(fname, label = 'Analizando archivos IA10…') {
+function showLoading(fname, label = 'Analizando archivos…') {
   document.getElementById('loading').classList.remove('hidden');
   document.getElementById('l-title').textContent = label;
   document.getElementById('l-fname').textContent = fname;
@@ -849,6 +1156,13 @@ function fmtNum(n) {
   return n.toLocaleString('es-CO');
 }
 
+// Para Excel: "0,1" → 0.1 numérico (permite sumar horas); vacío → ''
+function numOrBlank(v) {
+  if (v === '' || v == null) return '';
+  const n = parseFloat(String(v).replace(',', '.'));
+  return Number.isFinite(n) ? n : v;
+}
+
 
 /* ════════════════════════════════════════════════════════
    UI RENDERERS
@@ -859,6 +1173,7 @@ function updateStats() {
   document.getElementById('hs-ops').textContent   = fmtNum(st.ops);
   document.getElementById('hs-pkgs').textContent  = fmtNum(st.pkgs);
   document.getElementById('hs-mats').textContent  = fmtNum(st.mats);
+  document.getElementById('hs-hrs').textContent   = st.hours.toLocaleString('es-CO', { maximumFractionDigits: 1 });
 }
 
 function renderFileList() {
@@ -869,6 +1184,9 @@ function renderFileList() {
     const ops  = plansList.flatMap(p => p.operations).length;
     const pkgs = plansList.flatMap(p => p.operations.flatMap(o => o.frequencies)).length;
     const mats = plansList.flatMap(p => p.operations.flatMap(o => o.materials)).length;
+    const fmt  = f.format || 'IA10';
+    const hrs  = plansList.flatMap(p => p.operations)
+      .reduce((a, o) => a + (parseFloat(String(o.work || '0').replace(',', '.')) || 0), 0);
     return `<div class="fcard">
       <div class="fcard-ico">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="1.8" stroke-linecap="round">
@@ -877,12 +1195,13 @@ function renderFileList() {
         </svg>
       </div>
       <div class="fcard-info">
-        <div class="fcard-name">${esc(f.filename)}</div>
-        <div class="fcard-meta">${fmtNum(f.plans)} plan${f.plans !== 1 ? 'es' : ''}</div>
+        <div class="fcard-name">${esc(f.filename)} <span class="fmt-badge fmt-${fmt.toLowerCase()}">${esc(fmt)}</span></div>
+        <div class="fcard-meta">${fmtNum(f.plans)} ${fmt === 'IA17' ? `hoja${f.plans !== 1 ? 's' : ''} de ruta` : `plan${f.plans !== 1 ? 'es' : ''}`}</div>
         <div class="fcard-chips">
           <span class="chip chip-p">⚙ ${fmtNum(ops)} ops.</span>
           <span class="chip chip-f">◷ ${fmtNum(pkgs)} paquetes</span>
-          <span class="chip chip-m">◈ ${fmtNum(mats)} materiales</span>
+          ${mats > 0 ? `<span class="chip chip-m">◈ ${fmtNum(mats)} materiales</span>` : ''}
+          ${hrs > 0 ? `<span class="chip chip-n">⏱ ${hrs.toLocaleString('es-CO', { maximumFractionDigits: 1 })} H trabajo</span>` : ''}
           ${f.warns > 0 ? `<span class="chip chip-w">⚠ ${f.warns} avisos</span>` : ''}
         </div>
       </div>
@@ -1003,31 +1322,31 @@ function exportExcel() {
   // ─ Sheet 1: Cabecera ─────────────────────────────────
   const cabData = S.rows('cabecera');
   const cabAoA = [
-    ['Código Plan', 'Descripción Plan', '# Operaciones', 'Archivo'],
-    ...cabData.map(r => [r.planCode, r.description, r.numOps, r.filename])
+    ['Código Plan', 'Contador', 'Descripción Plan', 'Estrategia', 'Utilización', 'Status', 'Centro', '# Operaciones', 'Archivo'],
+    ...cabData.map(r => [r.planCode, r.counter, r.description, r.strategy, r.usage, r.status, r.centro, r.numOps, r.filename])
   ];
   const wsCab = XLSX.utils.aoa_to_sheet(cabAoA);
-  styleSheet(wsCab, cabAoA, [14, 45, 14, 30]);
+  styleSheet(wsCab, cabAoA, [14, 10, 45, 11, 11, 9, 9, 14, 30]);
   XLSX.utils.book_append_sheet(wb, wsCab, 'Cabecera');
 
   // ─ Sheet 2: Operaciones ──────────────────────────────
   const opsData = S.rows('operaciones');
   const opsAoA = [
-    ['Código Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', '# Paquetes', '# Materiales', '# Pasos', 'Archivo'],
-    ...opsData.map(r => [r.planCode, r.opNum, r.opDesc, r.extText, r.numFreqs, r.numMats, r.numPasos, r.filename])
+    ['Código Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', '# Paquetes', '# Materiales', '# Pasos', 'Archivo'],
+    ...opsData.map(r => [r.planCode, r.opNum, r.opDesc, r.extText, r.workCenter, r.controlKey, numOrBlank(r.numPersons), numOrBlank(r.work), numOrBlank(r.duration), r.numFreqs, r.numMats, r.numPasos, r.filename])
   ];
   const wsOps = XLSX.utils.aoa_to_sheet(opsAoA);
-  styleSheet(wsOps, opsAoA, [14, 11, 48, 48, 10, 12, 10, 30]);
+  styleSheet(wsOps, opsAoA, [14, 11, 48, 60, 15, 13, 11, 11, 12, 10, 12, 10, 30]);
   XLSX.utils.book_append_sheet(wb, wsOps, 'Operaciones');
 
   // ─ Sheet 3: Paquetes de Mantenimiento ────────────────
   const pkgData = S.rows('paquetes');
   const pkgAoA = [
-    ['Código Plan', 'N° Operación', 'Descripción Operación', 'N° Paquete', 'Frecuencia', 'Archivo'],
-    ...pkgData.map(r => [r.planCode, r.opNum, r.opDesc, r.pkgCode, r.frequency, r.filename])
+    ['Código Plan', 'N° Operación', 'Descripción Operación', 'N° Paquete', 'Abreviatura', 'Frecuencia', 'Archivo'],
+    ...pkgData.map(r => [r.planCode, r.opNum, r.opDesc, r.pkgCode, r.pkgShort, r.frequency, r.filename])
   ];
   const wsPkg = XLSX.utils.aoa_to_sheet(pkgAoA);
-  styleSheet(wsPkg, pkgAoA, [14, 11, 48, 11, 28, 30]);
+  styleSheet(wsPkg, pkgAoA, [14, 11, 48, 11, 12, 28, 30]);
   XLSX.utils.book_append_sheet(wb, wsPkg, 'Paquetes_Mtto');
 
   // ─ Sheet 4: Materiales ───────────────────────────────
@@ -1043,16 +1362,17 @@ function exportExcel() {
   // ─ Sheet 5: Consolidado ──────────────────────────────
   const conData = S.rows('consolidado');
   const conAoA = [
-    ['Código Plan', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Frecuencias / Paquetes', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', '# Mat.', '# Pasos', 'Archivo'],
-    ...conData.map(r => [r.planCode, r.planDesc, r.opNum, r.opDesc, r.extText, r.freqs === '—' ? '' : r.freqs, r.matCode === '—' ? '' : r.matCode, r.matDesc === '—' ? '' : r.matDesc, r.qty, r.unit, r.numMats, r.numPasos, r.filename])
+    ['Código Plan', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Frecuencias / Paquetes', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', '# Mat.', '# Pasos', 'Archivo'],
+    ...conData.map(r => [r.planCode, r.planDesc, r.opNum, r.opDesc, r.extText, r.freqs === '—' ? '' : r.freqs, r.workCenter, r.controlKey, numOrBlank(r.numPersons), numOrBlank(r.work), numOrBlank(r.duration), r.matCode === '—' ? '' : r.matCode, r.matDesc === '—' ? '' : r.matDesc, r.qty, r.unit, r.numMats, r.numPasos, r.filename])
   ];
   const wsCon = XLSX.utils.aoa_to_sheet(conAoA);
-  styleSheet(wsCon, conAoA, [14, 36, 11, 40, 40, 34, 14, 42, 10, 8, 8, 8, 30]);
+  styleSheet(wsCon, conAoA, [14, 36, 11, 40, 60, 34, 15, 13, 11, 11, 12, 14, 42, 10, 8, 8, 8, 30]);
   XLSX.utils.book_append_sheet(wb, wsCon, 'Consolidado');
 
   // Write file
   const ts = new Date().toISOString().slice(0, 10);
-  XLSX.writeFile(wb, `IA10_HojasRuta_${ts}.xlsx`);
+  const fmts = [...new Set(S.files.map(f => f.format || 'IA10'))].sort().join('-');
+  XLSX.writeFile(wb, `${fmts || 'IA10'}_HojasRuta_${ts}.xlsx`);
   toast(`Excel exportado · ${fmtNum(opsData.length)} ops · ${fmtNum(pkgData.length)} paquetes · ${fmtNum(matData.length)} materiales`, 'n');
 }
 
@@ -1132,7 +1452,7 @@ async function processFiles(fileList) {
       const text = await readFileWin1252(file);
       // Parse in next tick to allow UI update
       await new Promise(r => setTimeout(r, 0));
-      const result = IA10Parser.parseIA10(text, file.name);
+      const result = IA10Parser.parse(text, file.name);
       S.addFile(result);
     } catch (e) {
       toast(`Error al procesar ${file.name}: ${e.message}`, 'e');
@@ -1201,10 +1521,56 @@ const DEMO_TXT = `     100011   Pruebas Hidrostaticas/Emision Acustica Q
       |---   6002100                                  Instalacion Calentador
       |                      1  UN`;
 
+const DEMO_IA17_TXT = `30.07.2026                          Lista de impresi\xf3n de la hoja de ruta                          1
+${'-'.repeat(110)}
+Hoja de ruta CEDE-TR  4           PVO MOT COMBUST INTERNA MAK 16CM32C
+             Estrategia      E09            Tp.montaje
+             Utilizaci\xf3n     4              Status         4
+             Centro          RB01
+${'-'.repeat(110)}
+ Operaci\xf3n   0010                 Alistamiento Del Trabajo
+             Alistamiento Del Trabajo
+             Identificaci\xf3n y aceptaci\xf3n del trabajo: el supervisor verifica
+             el equipo con el fin de determinar el alcance del trabajo.
+             Puesto de trabajo    TR3ELECT
+             Clave de control     PM01
+             N\xfamero de personas    1
+             Trabajo                   0,1  H
+             Duraci\xf3n                  0,1  H
+  Paq.mant.  05  5H               750 Horas
+ Operaci\xf3n   0070                 Inspeccionar Tableros Electricos
+             Inspeccionar Tableros Electricos
+
+             Inspecci\xf3n y ajuste de Borneras, puestas a tierra, totalizadores.
+
+             Condiciones encontradas:
+
+             Borneras.
+             N/A ( ) Buena ( ) Regular ( ) Mala ( )
+
+             Observaciones.
+             Puesto de trabajo    TR3ELECT
+             Clave de control     ZPM1
+             N\xfamero de personas    2
+             Trabajo                  12,0  H
+             Duraci\xf3n                  6,0  H
+  Paq.mant.  05  5H               750 Horas
+ Operaci\xf3n   0090                 Inspeccionar Dispositivo Giro
+             Inspeccionar Dispositivo Giro
+
+             Corriente de fases.
+             L1:___A L2:___A  L3:___A
+             Puesto de trabajo    TR3ELECT
+             Clave de control     ZPM1
+             N\xfamero de personas    2
+             Trabajo                   2,0  H
+             Duraci\xf3n                  1,0  H
+  Paq.mant.  07  6H               1500 Horas`;
+
 async function ensureDemoForTour() {
   if (S.files.length) return;
-  const result = IA10Parser.parseIA10(DEMO_TXT, 'DEMO-IA10.txt');
-  S.addFile(result);
+  S.addFile(IA10Parser.parse(DEMO_TXT, 'DEMO-IA10.txt'));
+  S.addFile(IA10Parser.parse(DEMO_IA17_TXT, 'DEMO-IA17.txt'));
   refresh();
   await new Promise(r => setTimeout(r, 120));
 }
@@ -1222,23 +1588,23 @@ async function startGuidedTour() {
     doneLabel: '✓ Listo',
     steps: [
       {
-        title: '¡Bienvenido a IA10 · Hojas de Ruta!',
-        intro: 'Esta herramienta extrae y estructura el reporte <strong>IA10 de SAP PM</strong>: planes de mantenimiento, operaciones, paquetes de frecuencia y materiales. Hemos cargado datos de demostración para mostrarte el flujo.'
+        title: '¡Bienvenido a IA10 / IA17 · Hojas de Ruta!',
+        intro: 'Esta herramienta extrae y estructura los reportes <strong>IA10 e IA17 de SAP PM</strong>: planes y hojas de ruta, operaciones, paquetes de frecuencia, materiales y mano de obra. Hemos cargado un ejemplo de cada formato para mostrarte el flujo.'
       },
       {
         element: document.getElementById('drop-area'),
         title: '1 · Carga de archivos',
-        intro: 'Arrastra aquí uno o <strong>varios archivos TXT</strong> de IA10. Deben ser el reporte exportado en texto plano desde SAP (sin convertir), con codificación <code>Windows-1252</code>. Se pueden cargar múltiples archivos simultáneamente.'
+        intro: 'Arrastra aquí uno o <strong>varios archivos TXT</strong>. El <strong>formato se detecta automáticamente</strong>: <code>IA10</code> (árbol de planes con materiales) o <code>IA17</code> (lista de impresión de la hoja de ruta, con mano de obra). Deben exportarse en texto plano desde SAP, con codificación <code>Windows-1252</code>.'
       },
       {
         element: document.getElementById('file-list'),
         title: '2 · Resumen por archivo',
-        intro: 'Cada tarjeta muestra el archivo cargado con un resumen de <strong>planes, operaciones, paquetes de frecuencia y materiales</strong> detectados. Puedes quitar cualquier archivo con el botón ✕.'
+        intro: 'Cada tarjeta indica el <strong>formato detectado</strong> (IA10 o IA17) y un resumen de <strong>operaciones, paquetes, materiales y horas de trabajo</strong>. Puedes quitar cualquier archivo con el botón ✕.'
       },
       {
         element: document.getElementById('tabs'),
         title: '3 · Navegación por vistas',
-        intro: '<strong>Cinco vistas</strong> organizan los datos:<br>• <b>Cabecera</b> — Listado de planes<br>• <b>Operaciones</b> — Todas las operaciones<br>• <b>Paquetes Mtto</b> — Frecuencias por operación<br>• <b>Materiales</b> — Componentes y cantidades<br>• <b>Consolidado</b> — Vista unificada'
+        intro: '<strong>Cinco vistas</strong> organizan los datos:<br>• <b>Cabecera</b> — Planes / hojas de ruta con estrategia, utilización, status y centro<br>• <b>Operaciones</b> — Con texto largo, puesto de trabajo, clave de control, personas, trabajo y duración<br>• <b>Paquetes Mtto</b> — Frecuencias por operación (750 H, 1500 H…)<br>• <b>Materiales</b> — Componentes y cantidades (IA10)<br>• <b>Consolidado</b> — Vista unificada'
       },
       {
         element: document.getElementById('tsec'),
@@ -1248,12 +1614,12 @@ async function startGuidedTour() {
       {
         element: document.getElementById('btn-excel'),
         title: '5 · Exportar a Excel',
-        intro: 'Genera un <strong>Excel (.xlsx) con 5 hojas</strong>:<br>• <b>Cabecera</b> — Planes<br>• <b>Operaciones</b> — Con textos largos<br>• <b>Paquetes_Mtto</b> — Frecuencias<br>• <b>Materiales</b> — Códigos, descripción, cantidad y unidad<br>• <b>Consolidado</b> — Todo unificado'
+        intro: 'Genera un <strong>Excel (.xlsx) con 5 hojas</strong>:<br>• <b>Cabecera</b> — Planes y hojas de ruta<br>• <b>Operaciones</b> — Textos largos y mano de obra<br>• <b>Paquetes_Mtto</b> — Frecuencias<br>• <b>Materiales</b> — Códigos, descripción, cantidad y unidad<br>• <b>Consolidado</b> — Todo unificado<br><br>Las horas y el n° de personas se exportan como <strong>números</strong>, listos para sumar.'
       },
       {
         element: document.getElementById('header-stats'),
         title: '6 · Estadísticas en tiempo real',
-        intro: 'El encabezado muestra siempre el <strong>conteo total</strong> de planes, operaciones, paquetes y materiales de todos los archivos cargados. ¡Ya estás listo para procesar tus archivos IA10!'
+        intro: 'El encabezado muestra siempre el <strong>conteo total</strong> de planes, operaciones, paquetes, materiales y <strong>horas de trabajo</strong> de todos los archivos cargados. ¡Ya estás listo para procesar tus archivos IA10 e IA17!'
       }
     ]
   });
