@@ -901,8 +901,8 @@ const S = (() => {
       filename: p.filename
     })));
   }
-  function _freqs(){ return _ops().flatMap(o => o.frequencies.map(f => ({ planCode: o.planCode, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, pkgCode: f.code, pkgShort: f.short || '', frequency: f.name, filename: o.filename }))); }
-  function _mats() { return _ops().flatMap(o => o.materials.map(m => ({ planCode: o.planCode, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, matCode: m.code, matDesc: m.description, qty: m.qty, unit: m.unit, filename: o.filename }))); }
+  function _freqs(){ return _ops().flatMap(o => o.frequencies.map(f => ({ planCode: o.planCode, counter: o.counter, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, pkgCode: f.code, pkgShort: f.short || '', frequency: f.name, filename: o.filename }))); }
+  function _mats() { return _ops().flatMap(o => o.materials.map(m => ({ planCode: o.planCode, counter: o.counter, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, matCode: m.code, matDesc: m.description, qty: m.qty, unit: m.unit, filename: o.filename }))); }
 
   function rows(tab) {
     switch (tab) {
@@ -918,7 +918,8 @@ const S = (() => {
         filename: p.filename
       }));
       case 'operaciones': return _ops().map(o => ({
-        planCode: o.planCode, opNum: o.number, opDesc: o.description, extText: o.extendedText,
+        planCode: o.planCode, counter: o.counter, planDesc: o.planDesc,
+        opNum: o.number, opDesc: o.description, extText: o.extendedText,
         workCenter: o.workCenter || '', controlKey: o.controlKey || '', numPersons: o.numPersons || '',
         work: o.work || '', duration: o.duration || '',
         numFreqs: o.frequencies.length, numMats: o.materials.length, numPasos: (o.steps||[]).length,
@@ -929,6 +930,7 @@ const S = (() => {
       case 'consolidado': return _ops().flatMap(o => {
         const base = {
           planCode: o.planCode,
+          counter: o.counter,
           planDesc: o.planDesc,
           opNum: o.number,
           opDesc: o.description,
@@ -1043,6 +1045,8 @@ const COLS = {
   ],
   operaciones: [
     { key: 'planCode', label: 'Código Plan', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'counter',  label: 'Contador',    render: r => dash(r.counter, `<span class="cc">${esc(r.counter)}</span>`) },
+    { key: 'planDesc', label: 'Descripción Plan', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
     { key: 'opNum',    label: 'N° Op.',      render: r => `<span class="cc">${esc(r.opNum)}</span>` },
     { key: 'opDesc',   label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
     { key: 'extText',  label: 'Texto Largo', render: r => renderLongText(r.extText) },
@@ -1058,6 +1062,8 @@ const COLS = {
   ],
   paquetes: [
     { key: 'planCode',   label: 'Código Plan', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'counter',    label: 'Contador',    render: r => dash(r.counter, `<span class="cc">${esc(r.counter)}</span>`) },
+    { key: 'planDesc',   label: 'Descripción Plan', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
     { key: 'opNum',      label: 'N° Op.',      render: r => `<span class="cc">${esc(r.opNum)}</span>` },
     { key: 'opDesc',     label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
     { key: 'pkgCode',    label: 'N° Paquete',  render: r => `<span class="cc">${esc(r.pkgCode)}</span>` },
@@ -1067,6 +1073,8 @@ const COLS = {
   ],
   materiales: [
     { key: 'planCode',   label: 'Código Plan', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'counter',    label: 'Contador',    render: r => dash(r.counter, `<span class="cc">${esc(r.counter)}</span>`) },
+    { key: 'planDesc',   label: 'Descripción Plan', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
     { key: 'opNum',      label: 'N° Op.',      render: r => `<span class="cc">${esc(r.opNum)}</span>` },
     { key: 'opDesc',     label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
     { key: 'matCode',    label: 'Código Material', render: r => `<span class="mat-badge">${esc(r.matCode)}</span>` },
@@ -1077,6 +1085,7 @@ const COLS = {
   ],
   consolidado: [
     { key: 'planCode',  label: 'Código Plan', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'counter',   label: 'Contador',    render: r => dash(r.counter, `<span class="cc">${esc(r.counter)}</span>`) },
     { key: 'planDesc',  label: 'Descripción Plan', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
     { key: 'opNum',     label: 'N° Op.',  render: r => `<span class="cc">${esc(r.opNum)}</span>` },
     { key: 'opDesc',    label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
@@ -1332,41 +1341,41 @@ function exportExcel() {
   // ─ Sheet 2: Operaciones ──────────────────────────────
   const opsData = S.rows('operaciones');
   const opsAoA = [
-    ['Código Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', '# Paquetes', '# Materiales', '# Pasos', 'Archivo'],
-    ...opsData.map(r => [r.planCode, r.opNum, r.opDesc, r.extText, r.workCenter, r.controlKey, numOrBlank(r.numPersons), numOrBlank(r.work), numOrBlank(r.duration), r.numFreqs, r.numMats, r.numPasos, r.filename])
+    ['Código Plan', 'Contador', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', '# Paquetes', '# Materiales', '# Pasos', 'Archivo'],
+    ...opsData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.extText, r.workCenter, r.controlKey, numOrBlank(r.numPersons), numOrBlank(r.work), numOrBlank(r.duration), r.numFreqs, r.numMats, r.numPasos, r.filename])
   ];
   const wsOps = XLSX.utils.aoa_to_sheet(opsAoA);
-  styleSheet(wsOps, opsAoA, [14, 11, 48, 60, 15, 13, 11, 11, 12, 10, 12, 10, 30]);
+  styleSheet(wsOps, opsAoA, [14, 10, 36, 11, 48, 60, 15, 13, 11, 11, 12, 10, 12, 10, 30]);
   XLSX.utils.book_append_sheet(wb, wsOps, 'Operaciones');
 
   // ─ Sheet 3: Paquetes de Mantenimiento ────────────────
   const pkgData = S.rows('paquetes');
   const pkgAoA = [
-    ['Código Plan', 'N° Operación', 'Descripción Operación', 'N° Paquete', 'Abreviatura', 'Frecuencia', 'Archivo'],
-    ...pkgData.map(r => [r.planCode, r.opNum, r.opDesc, r.pkgCode, r.pkgShort, r.frequency, r.filename])
+    ['Código Plan', 'Contador', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'N° Paquete', 'Abreviatura', 'Frecuencia', 'Archivo'],
+    ...pkgData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.pkgCode, r.pkgShort, r.frequency, r.filename])
   ];
   const wsPkg = XLSX.utils.aoa_to_sheet(pkgAoA);
-  styleSheet(wsPkg, pkgAoA, [14, 11, 48, 11, 12, 28, 30]);
+  styleSheet(wsPkg, pkgAoA, [14, 10, 36, 11, 48, 11, 12, 28, 30]);
   XLSX.utils.book_append_sheet(wb, wsPkg, 'Paquetes_Mtto');
 
   // ─ Sheet 4: Materiales ───────────────────────────────
   const matData = S.rows('materiales');
   const matAoA = [
-    ['Código Plan', 'N° Operación', 'Descripción Operación', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', 'Archivo'],
-    ...matData.map(r => [r.planCode, r.opNum, r.opDesc, r.matCode, r.matDesc, r.qty, r.unit, r.filename])
+    ['Código Plan', 'Contador', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', 'Archivo'],
+    ...matData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.matCode, r.matDesc, numOrBlank(r.qty), r.unit, r.filename])
   ];
   const wsMat = XLSX.utils.aoa_to_sheet(matAoA);
-  styleSheet(wsMat, matAoA, [14, 11, 42, 14, 48, 10, 8, 30]);
+  styleSheet(wsMat, matAoA, [14, 10, 36, 11, 42, 14, 48, 10, 8, 30]);
   XLSX.utils.book_append_sheet(wb, wsMat, 'Materiales');
 
   // ─ Sheet 5: Consolidado ──────────────────────────────
   const conData = S.rows('consolidado');
   const conAoA = [
-    ['Código Plan', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Frecuencias / Paquetes', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', '# Mat.', '# Pasos', 'Archivo'],
-    ...conData.map(r => [r.planCode, r.planDesc, r.opNum, r.opDesc, r.extText, r.freqs === '—' ? '' : r.freqs, r.workCenter, r.controlKey, numOrBlank(r.numPersons), numOrBlank(r.work), numOrBlank(r.duration), r.matCode === '—' ? '' : r.matCode, r.matDesc === '—' ? '' : r.matDesc, r.qty, r.unit, r.numMats, r.numPasos, r.filename])
+    ['Código Plan', 'Contador', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Frecuencias / Paquetes', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', '# Mat.', '# Pasos', 'Archivo'],
+    ...conData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.extText, r.freqs === '—' ? '' : r.freqs, r.workCenter, r.controlKey, numOrBlank(r.numPersons), numOrBlank(r.work), numOrBlank(r.duration), r.matCode === '—' ? '' : r.matCode, r.matDesc === '—' ? '' : r.matDesc, numOrBlank(r.qty), r.unit, r.numMats, r.numPasos, r.filename])
   ];
   const wsCon = XLSX.utils.aoa_to_sheet(conAoA);
-  styleSheet(wsCon, conAoA, [14, 36, 11, 40, 60, 34, 15, 13, 11, 11, 12, 14, 42, 10, 8, 8, 8, 30]);
+  styleSheet(wsCon, conAoA, [14, 10, 36, 11, 40, 60, 34, 15, 13, 11, 11, 12, 14, 42, 10, 8, 8, 8, 30]);
   XLSX.utils.book_append_sheet(wb, wsCon, 'Consolidado');
 
   // Write file
