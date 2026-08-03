@@ -340,11 +340,11 @@ code{font-family:'DM Mono',monospace;background:var(--bg-2);padding:1px 5px;bord
           Tour guiado
         </button>
       </div>
-      <p>Transacciones IA10 e IA17 · Parser, estructurador y exportador de planes de mantenimiento</p>
+      <p>Transacciones IA10 e IA17 · Parser, estructurador y exportador de hojas de ruta de mantenimiento</p>
     </div>
   </div>
   <div id="header-stats">
-    <div class="hstat"><span class="hstat-v" id="hs-plans">0</span><span class="hstat-l">Planes</span></div>
+    <div class="hstat"><span class="hstat-v" id="hs-plans">0</span><span class="hstat-l">Hojas de Ruta</span></div>
     <div class="hstat"><span class="hstat-v" id="hs-ops">0</span><span class="hstat-l">Operaciones</span></div>
     <div class="hstat"><span class="hstat-v" id="hs-pkgs">0</span><span class="hstat-l">Paquetes</span></div>
     <div class="hstat"><span class="hstat-v" id="hs-mats">0</span><span class="hstat-l">Materiales</span></div>
@@ -1033,9 +1033,9 @@ const S = (() => {
 ════════════════════════════════════════════════════════ */
 const COLS = {
   cabecera: [
-    { key: 'planCode',    label: 'Código Plan',      render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'planCode',    label: 'Código Hoja de Ruta',      render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
     { key: 'counter',     label: 'Contador',         render: r => dash(r.counter, `<span class="cc">${esc(r.counter)}</span>`) },
-    { key: 'description', label: 'Descripción Plan', render: r => `<span class="dc text-wrap">${esc(r.description)}</span>` },
+    { key: 'description', label: 'Descripción Hoja de Ruta', render: r => `<span class="dc text-wrap">${esc(r.description)}</span>` },
     { key: 'strategy',    label: 'Estrategia',       render: r => dash(r.strategy, `<span class="cc">${esc(r.strategy)}</span>`) },
     { key: 'usage',       label: 'Utilización',      render: r => dash(r.usage, `<span class="cc">${esc(r.usage)}</span>`) },
     { key: 'status',      label: 'Status',           render: r => dash(r.status, `<span class="cc">${esc(r.status)}</span>`) },
@@ -1044,9 +1044,9 @@ const COLS = {
     { key: 'filename',    label: 'Archivo',          render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
   ],
   operaciones: [
-    { key: 'planCode', label: 'Código Plan', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'planCode', label: 'Código Hoja de Ruta', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
     { key: 'counter',  label: 'Contador',    render: r => dash(r.counter, `<span class="cc">${esc(r.counter)}</span>`) },
-    { key: 'planDesc', label: 'Descripción Plan', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
+    { key: 'planDesc', label: 'Descripción Hoja de Ruta', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
     { key: 'opNum',    label: 'N° Op.',      render: r => `<span class="cc">${esc(r.opNum)}</span>` },
     { key: 'opDesc',   label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
     { key: 'extText',  label: 'Texto Largo', render: r => renderLongText(r.extText) },
@@ -1061,9 +1061,9 @@ const COLS = {
     { key: 'filename', label: 'Archivo', render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
   ],
   paquetes: [
-    { key: 'planCode',   label: 'Código Plan', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'planCode',   label: 'Código Hoja de Ruta', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
     { key: 'counter',    label: 'Contador',    render: r => dash(r.counter, `<span class="cc">${esc(r.counter)}</span>`) },
-    { key: 'planDesc',   label: 'Descripción Plan', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
+    { key: 'planDesc',   label: 'Descripción Hoja de Ruta', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
     { key: 'opNum',      label: 'N° Op.',      render: r => `<span class="cc">${esc(r.opNum)}</span>` },
     { key: 'opDesc',     label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
     { key: 'pkgCode',    label: 'N° Paquete',  render: r => `<span class="cc">${esc(r.pkgCode)}</span>` },
@@ -1072,9 +1072,9 @@ const COLS = {
     { key: 'filename',   label: 'Archivo', render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
   ],
   materiales: [
-    { key: 'planCode',   label: 'Código Plan', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'planCode',   label: 'Código Hoja de Ruta', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
     { key: 'counter',    label: 'Contador',    render: r => dash(r.counter, `<span class="cc">${esc(r.counter)}</span>`) },
-    { key: 'planDesc',   label: 'Descripción Plan', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
+    { key: 'planDesc',   label: 'Descripción Hoja de Ruta', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
     { key: 'opNum',      label: 'N° Op.',      render: r => `<span class="cc">${esc(r.opNum)}</span>` },
     { key: 'opDesc',     label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
     { key: 'matCode',    label: 'Código Material', render: r => `<span class="mat-badge">${esc(r.matCode)}</span>` },
@@ -1084,9 +1084,9 @@ const COLS = {
     { key: 'filename',   label: 'Archivo', render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
   ],
   consolidado: [
-    { key: 'planCode',  label: 'Código Plan', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
+    { key: 'planCode',  label: 'Código Hoja de Ruta', render: r => `<span class="bold-cc">${esc(r.planCode)}</span>` },
     { key: 'counter',   label: 'Contador',    render: r => dash(r.counter, `<span class="cc">${esc(r.counter)}</span>`) },
-    { key: 'planDesc',  label: 'Descripción Plan', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
+    { key: 'planDesc',  label: 'Descripción Hoja de Ruta', render: r => `<span class="dc text-wrap">${esc(r.planDesc)}</span>` },
     { key: 'opNum',     label: 'N° Op.',  render: r => `<span class="cc">${esc(r.opNum)}</span>` },
     { key: 'opDesc',    label: 'Descripción Operación', render: r => `<span class="dc text-wrap">${esc(r.opDesc)}</span>` },
     { key: 'extText',   label: 'Texto Largo', render: r => renderLongText(r.extText) },
@@ -1205,7 +1205,7 @@ function renderFileList() {
       </div>
       <div class="fcard-info">
         <div class="fcard-name">${esc(f.filename)} <span class="fmt-badge fmt-${fmt.toLowerCase()}">${esc(fmt)}</span></div>
-        <div class="fcard-meta">${fmtNum(f.plans)} ${fmt === 'IA17' ? `hoja${f.plans !== 1 ? 's' : ''} de ruta` : `plan${f.plans !== 1 ? 'es' : ''}`}</div>
+        <div class="fcard-meta">${fmtNum(f.plans)} hoja${f.plans !== 1 ? 's' : ''} de ruta</div>
         <div class="fcard-chips">
           <span class="chip chip-p">⚙ ${fmtNum(ops)} ops.</span>
           <span class="chip chip-f">◷ ${fmtNum(pkgs)} paquetes</span>
@@ -1331,7 +1331,7 @@ function exportExcel() {
   // ─ Sheet 1: Cabecera ─────────────────────────────────
   const cabData = S.rows('cabecera');
   const cabAoA = [
-    ['Código Plan', 'Contador', 'Descripción Plan', 'Estrategia', 'Utilización', 'Status', 'Centro', '# Operaciones', 'Archivo'],
+    ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'Estrategia', 'Utilización', 'Status', 'Centro', '# Operaciones', 'Archivo'],
     ...cabData.map(r => [r.planCode, r.counter, r.description, r.strategy, r.usage, r.status, r.centro, r.numOps, r.filename])
   ];
   const wsCab = XLSX.utils.aoa_to_sheet(cabAoA);
@@ -1341,7 +1341,7 @@ function exportExcel() {
   // ─ Sheet 2: Operaciones ──────────────────────────────
   const opsData = S.rows('operaciones');
   const opsAoA = [
-    ['Código Plan', 'Contador', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', '# Paquetes', '# Materiales', '# Pasos', 'Archivo'],
+    ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', '# Paquetes', '# Materiales', '# Pasos', 'Archivo'],
     ...opsData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.extText, r.workCenter, r.controlKey, numOrBlank(r.numPersons), numOrBlank(r.work), numOrBlank(r.duration), r.numFreqs, r.numMats, r.numPasos, r.filename])
   ];
   const wsOps = XLSX.utils.aoa_to_sheet(opsAoA);
@@ -1351,7 +1351,7 @@ function exportExcel() {
   // ─ Sheet 3: Paquetes de Mantenimiento ────────────────
   const pkgData = S.rows('paquetes');
   const pkgAoA = [
-    ['Código Plan', 'Contador', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'N° Paquete', 'Abreviatura', 'Frecuencia', 'Archivo'],
+    ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'N° Operación', 'Descripción Operación', 'N° Paquete', 'Abreviatura', 'Frecuencia', 'Archivo'],
     ...pkgData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.pkgCode, r.pkgShort, r.frequency, r.filename])
   ];
   const wsPkg = XLSX.utils.aoa_to_sheet(pkgAoA);
@@ -1361,7 +1361,7 @@ function exportExcel() {
   // ─ Sheet 4: Materiales ───────────────────────────────
   const matData = S.rows('materiales');
   const matAoA = [
-    ['Código Plan', 'Contador', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', 'Archivo'],
+    ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'N° Operación', 'Descripción Operación', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', 'Archivo'],
     ...matData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.matCode, r.matDesc, numOrBlank(r.qty), r.unit, r.filename])
   ];
   const wsMat = XLSX.utils.aoa_to_sheet(matAoA);
@@ -1371,7 +1371,7 @@ function exportExcel() {
   // ─ Sheet 5: Consolidado ──────────────────────────────
   const conData = S.rows('consolidado');
   const conAoA = [
-    ['Código Plan', 'Contador', 'Descripción Plan', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Frecuencias / Paquetes', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', '# Mat.', '# Pasos', 'Archivo'],
+    ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Frecuencias / Paquetes', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', '# Mat.', '# Pasos', 'Archivo'],
     ...conData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.extText, r.freqs === '—' ? '' : r.freqs, r.workCenter, r.controlKey, numOrBlank(r.numPersons), numOrBlank(r.work), numOrBlank(r.duration), r.matCode === '—' ? '' : r.matCode, r.matDesc === '—' ? '' : r.matDesc, numOrBlank(r.qty), r.unit, r.numMats, r.numPasos, r.filename])
   ];
   const wsCon = XLSX.utils.aoa_to_sheet(conAoA);
@@ -1474,7 +1474,7 @@ async function processFiles(fileList) {
   refresh();
 
   const st = S.stats;
-  toast(`${files.length} archivo${files.length > 1 ? 's' : ''} cargado${files.length > 1 ? 's' : ''} · ${fmtNum(st.plans)} planes · ${fmtNum(st.ops)} operaciones`);
+  toast(`${files.length} archivo${files.length > 1 ? 's' : ''} cargado${files.length > 1 ? 's' : ''} · ${fmtNum(st.plans)} hoja${st.plans !== 1 ? 's' : ''} de ruta · ${fmtNum(st.ops)} operaciones`);
 }
 
 function readFileWin1252(file) {
@@ -1598,12 +1598,12 @@ async function startGuidedTour() {
     steps: [
       {
         title: '¡Bienvenido a IA10 / IA17 · Hojas de Ruta!',
-        intro: 'Esta herramienta extrae y estructura los reportes <strong>IA10 e IA17 de SAP PM</strong>: planes y hojas de ruta, operaciones, paquetes de frecuencia, materiales y mano de obra. Hemos cargado un ejemplo de cada formato para mostrarte el flujo.'
+        intro: 'Esta herramienta extrae y estructura los reportes <strong>IA10 e IA17 de SAP PM</strong>: hojas de ruta, operaciones, paquetes de frecuencia, materiales y mano de obra. Hemos cargado un ejemplo de cada formato para mostrarte el flujo.'
       },
       {
         element: document.getElementById('drop-area'),
         title: '1 · Carga de archivos',
-        intro: 'Arrastra aquí uno o <strong>varios archivos TXT</strong>. El <strong>formato se detecta automáticamente</strong>: <code>IA10</code> (árbol de planes con materiales) o <code>IA17</code> (lista de impresión de la hoja de ruta, con mano de obra). Deben exportarse en texto plano desde SAP, con codificación <code>Windows-1252</code>.'
+        intro: 'Arrastra aquí uno o <strong>varios archivos TXT</strong>. El <strong>formato se detecta automáticamente</strong>: <code>IA10</code> (árbol de hojas de ruta con materiales) o <code>IA17</code> (lista de impresión de la hoja de ruta, con mano de obra). Deben exportarse en texto plano desde SAP, con codificación <code>Windows-1252</code>.'
       },
       {
         element: document.getElementById('file-list'),
@@ -1613,7 +1613,7 @@ async function startGuidedTour() {
       {
         element: document.getElementById('tabs'),
         title: '3 · Navegación por vistas',
-        intro: '<strong>Cinco vistas</strong> organizan los datos:<br>• <b>Cabecera</b> — Planes / hojas de ruta con estrategia, utilización, status y centro<br>• <b>Operaciones</b> — Con texto largo, puesto de trabajo, clave de control, personas, trabajo y duración<br>• <b>Paquetes Mtto</b> — Frecuencias por operación (750 H, 1500 H…)<br>• <b>Materiales</b> — Componentes y cantidades (IA10)<br>• <b>Consolidado</b> — Vista unificada'
+        intro: '<strong>Cinco vistas</strong> organizan los datos:<br>• <b>Cabecera</b> — Hojas de ruta con estrategia, utilización, status y centro<br>• <b>Operaciones</b> — Con texto largo, puesto de trabajo, clave de control, personas, trabajo y duración<br>• <b>Paquetes Mtto</b> — Frecuencias por operación (750 H, 1500 H…)<br>• <b>Materiales</b> — Componentes y cantidades (IA10)<br>• <b>Consolidado</b> — Vista unificada'
       },
       {
         element: document.getElementById('tsec'),
@@ -1623,12 +1623,12 @@ async function startGuidedTour() {
       {
         element: document.getElementById('btn-excel'),
         title: '5 · Exportar a Excel',
-        intro: 'Genera un <strong>Excel (.xlsx) con 5 hojas</strong>:<br>• <b>Cabecera</b> — Planes y hojas de ruta<br>• <b>Operaciones</b> — Textos largos y mano de obra<br>• <b>Paquetes_Mtto</b> — Frecuencias<br>• <b>Materiales</b> — Códigos, descripción, cantidad y unidad<br>• <b>Consolidado</b> — Todo unificado<br><br>Las horas y el n° de personas se exportan como <strong>números</strong>, listos para sumar.'
+        intro: 'Genera un <strong>Excel (.xlsx) con 5 hojas</strong>:<br>• <b>Cabecera</b> — Hojas de ruta<br>• <b>Operaciones</b> — Textos largos y mano de obra<br>• <b>Paquetes_Mtto</b> — Frecuencias<br>• <b>Materiales</b> — Códigos, descripción, cantidad y unidad<br>• <b>Consolidado</b> — Todo unificado<br><br>Las horas y el n° de personas se exportan como <strong>números</strong>, listos para sumar.'
       },
       {
         element: document.getElementById('header-stats'),
         title: '6 · Estadísticas en tiempo real',
-        intro: 'El encabezado muestra siempre el <strong>conteo total</strong> de planes, operaciones, paquetes, materiales y <strong>horas de trabajo</strong> de todos los archivos cargados. ¡Ya estás listo para procesar tus archivos IA10 e IA17!'
+        intro: 'El encabezado muestra siempre el <strong>conteo total</strong> de hojas de ruta, operaciones, paquetes, materiales y <strong>horas de trabajo</strong> de todos los archivos cargados. ¡Ya estás listo para procesar tus archivos IA10 e IA17!'
       }
     ]
   });
