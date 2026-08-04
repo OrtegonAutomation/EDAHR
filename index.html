@@ -590,6 +590,8 @@ const IA10Parser = (() => {
           lastMat = null;
         } else if (currentPlan) {
           warns.push({ linea: i+1, texto: raw.trim().slice(0, 80), razon: 'Operación sin número reconocible' });
+        } else {
+          warns.push({ linea: i+1, texto: raw.trim().slice(0, 80), razon: 'Operación sin hoja de ruta previa' });
         }
         continue;
       }
@@ -654,6 +656,10 @@ const IA10Parser = (() => {
         }
         continue;
       }
+    }
+
+    if (!plans.length) {
+      warns.push({ linea: 0, texto: filename, razon: 'No se encontró ninguna hoja de ruta en el archivo (¿formato o codificación incorrectos?)' });
     }
 
     return { plans, warns, filename, format: 'IA10' };
@@ -802,31 +808,41 @@ const IA10Parser = (() => {
       // ── PAQUETE DE MANTENIMIENTO ────────────────────
       // "  Paq.mant.  05  5H               750 Horas"
       m = raw.match(/^\s*Paq\.?\s*mant\.?\s+(\S+)\s+(\S+)\s+(.*)$/i);
-      if (m && currentOp) {
-        currentOp.frequencies.push({
-          code: m[1].trim(),          // 05
-          short: m[2].trim(),         // 5H
-          name: m[3].trim()           // 750 Horas
-        });
+      if (m) {
+        if (currentOp) {
+          currentOp.frequencies.push({
+            code: m[1].trim(),          // 05
+            short: m[2].trim(),         // 5H
+            name: m[3].trim()           // 750 Horas
+          });
+        } else {
+          // Un paquete sin operación activa no se puede asignar: antes se
+          // descartaba en silencio, ahora queda registrado como aviso.
+          warns.push({ linea: i+1, texto: raw.trim().slice(0, 80), razon: 'Paquete de mantenimiento sin operación asociada' });
+        }
         continue;
       }
 
-      // ── CAMPOS DE CABECERA (antes de la 1ª operación) ─
-      if (currentPlan && !currentOp) {
+      // ── CAMPOS DE CABECERA ──────────────────────────
+      // Tras un salto de página SAP repite la cabecera; si ya hay una operación
+      // activa estas líneas se colaban dentro del texto largo. Se reconocen
+      // siempre, y sólo rellenan lo que aún esté vacío.
+      if (currentPlan) {
         // "Estrategia      E09            Tp.montaje"
+        const setHdr = (k, v) => { if (v && !currentPlan[k]) currentPlan[k] = v.trim(); };
         m = raw.match(/^\s*Estrategia\s+(\S+)(?:\s+Tp\.montaje\s*(.*))?$/i);
-        if (m) { currentPlan.strategy = m[1].trim(); currentPlan.assemblyType = (m[2] || '').trim(); continue; }
+        if (m) { setHdr('strategy', m[1]); setHdr('assemblyType', m[2] || ''); continue; }
         // "Tp.montaje" en línea propia
         m = raw.match(/^\s*Tp\.montaje\s+(\S+)\s*$/i);
-        if (m) { currentPlan.assemblyType = m[1].trim(); continue; }
+        if (m) { setHdr('assemblyType', m[1]); continue; }
         // "Utilización     4              Status         4"
         m = raw.match(/^\s*Utilizaci[óo]n\s+(\S+)(?:\s+Status\s+(\S+))?\s*$/i);
-        if (m) { currentPlan.usage = m[1].trim(); if (m[2]) currentPlan.status = m[2].trim(); continue; }
+        if (m) { setHdr('usage', m[1]); setHdr('status', m[2]); continue; }
         m = raw.match(/^\s*Status\s+(\S+)\s*$/i);
-        if (m) { currentPlan.status = m[1].trim(); continue; }
+        if (m) { setHdr('status', m[1]); continue; }
         // "Centro          RB01"
         m = raw.match(/^\s*Centro\s+(\S+)\s*$/i);
-        if (m) { currentPlan.workCenter = m[1].trim(); continue; }
+        if (m) { setHdr('workCenter', m[1]); continue; }
       }
 
       if (!currentOp) continue;
@@ -971,10 +987,22 @@ const S = (() => {
       r = r.filter(x => Object.values(x).some(v => String(v).toLowerCase().includes(q)));
     }
     if (_sortCol) {
+      // Las columnas numéricas (contadores, horas, cantidades) deben ordenarse
+      // como números: por texto "100" quedaría antes que "9".
+      const num = v => {
+        if (typeof v === 'number') return v;
+        const s = String(v ?? '').trim();
+        if (!s || !/^-?[\d.,]+$/.test(s)) return null;
+        const n = parseFloat(s.replace(/\./g, '').replace(',', '.'));
+        return Number.isFinite(n) ? n : null;
+      };
       r = [...r].sort((a, b) => {
-        const av = String(a[_sortCol] ?? '').toLowerCase();
-        const bv = String(b[_sortCol] ?? '').toLowerCase();
-        return _sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+        const an = num(a[_sortCol]), bn = num(b[_sortCol]);
+        let d;
+        if (an !== null && bn !== null) d = an - bn;
+        else d = String(a[_sortCol] ?? '').toLowerCase()
+                 .localeCompare(String(b[_sortCol] ?? '').toLowerCase());
+        return _sortAsc ? d : -d;
       });
     }
     return r;
@@ -997,6 +1025,7 @@ const S = (() => {
       const idx = _files.findIndex(f => f.filename === data.filename);
       const meta = { filename: data.filename, format: data.format || 'IA10', plans: data.plans.length, warns: data.warns.length, allWarns: data.warns };
       if (idx > -1) _files.splice(idx, 1, meta); else _files.push(meta);
+      return idx > -1;   // true → reemplazó un archivo con el mismo nombre
     },
     removeFile(fn) {
       _plans = _plans.filter(p => p.filename !== fn);
@@ -1121,12 +1150,19 @@ function dash(v, html) {
 
 // El texto largo del IA17 conserva saltos de línea (checklists, formatos).
 // En la tabla se muestra recortado; el texto íntegro va en el tooltip.
+// Un tooltip nativo no muestra más de ~1-2 KB y un title de 100 KB+ por fila
+// infla el DOM sin aportar nada: se recorta para mantener la tabla ágil.
+const TOOLTIP_MAX = 1500;
+
 function renderLongText(txt) {
   if (!txt) return `<span class="dc-dim">—</span>`;
   const oneLine = txt.replace(/\s*\n\s*/g, ' ').trim();
   const lines = txt.split('\n').length;
   const badge = lines > 1 ? `<span class="lt-lines">${lines} líneas</span>` : '';
-  return `<span class="et-cell" title="${esc(txt)}">${esc(oneLine)}</span>${badge}`;
+  const tip = txt.length > TOOLTIP_MAX
+    ? txt.slice(0, TOOLTIP_MAX) + '\n\n[…] Texto completo en el Excel exportado.'
+    : txt;
+  return `<span class="et-cell" title="${esc(tip)}">${esc(oneLine)}</span>${badge}`;
 }
 
 let _toastTimer = null;
@@ -1162,7 +1198,8 @@ function hideLoading() {
 }
 
 function fmtNum(n) {
-  return n.toLocaleString('es-CO');
+  const v = Number(n);
+  return Number.isFinite(v) ? v.toLocaleString('es-CO') : '0';
 }
 
 // Para Excel: "0,1" → 0.1 numérico (permite sumar horas); vacío → ''
@@ -1325,8 +1362,33 @@ function refresh() {
 /* ════════════════════════════════════════════════════════
    EXCEL EXPORT
 ════════════════════════════════════════════════════════ */
+// Límites duros del formato XLSX.
+const XL_MAX_CELL = 32767;        // caracteres por celda
+const XL_MAX_ROWS = 1048576;      // filas por hoja
+const XL_TRUNC_MARK = ' […texto recortado…]';
+let xlTruncCount = 0;
+let xlDroppedRows = 0;
+
+// Recorta cualquier celda de texto que exceda el límite de Excel. Se aplica a
+// todas las hojas: el desbordamiento suele venir del texto largo, pero
+// cualquier campo concatenado puede crecer según el archivo de origen.
+function clampCells(aoa) {
+  let rows = aoa;
+  if (rows.length > XL_MAX_ROWS) {
+    xlDroppedRows += rows.length - XL_MAX_ROWS;
+    rows = rows.slice(0, XL_MAX_ROWS);
+  }
+  return rows.map(row => row.map(v => {
+    if (typeof v !== 'string' || v.length <= XL_MAX_CELL) return v;
+    xlTruncCount++;
+    return v.slice(0, XL_MAX_CELL - XL_TRUNC_MARK.length) + XL_TRUNC_MARK;
+  }));
+}
+
 function exportExcel() {
   const wb = XLSX.utils.book_new();
+  xlTruncCount = 0;
+  xlDroppedRows = 0;
 
   // ─ Sheet 1: Cabecera ─────────────────────────────────
   const cabData = S.rows('cabecera');
@@ -1334,7 +1396,7 @@ function exportExcel() {
     ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'Estrategia', 'Utilización', 'Status', 'Centro', '# Operaciones', 'Archivo'],
     ...cabData.map(r => [r.planCode, r.counter, r.description, r.strategy, r.usage, r.status, r.centro, r.numOps, r.filename])
   ];
-  const wsCab = XLSX.utils.aoa_to_sheet(cabAoA);
+  const wsCab = XLSX.utils.aoa_to_sheet(clampCells(cabAoA));
   styleSheet(wsCab, cabAoA, [14, 10, 45, 11, 11, 9, 9, 14, 30]);
   XLSX.utils.book_append_sheet(wb, wsCab, 'Cabecera');
 
@@ -1344,7 +1406,7 @@ function exportExcel() {
     ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', '# Paquetes', '# Materiales', '# Pasos', 'Archivo'],
     ...opsData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.extText, r.workCenter, r.controlKey, numOrBlank(r.numPersons), numOrBlank(r.work), numOrBlank(r.duration), r.numFreqs, r.numMats, r.numPasos, r.filename])
   ];
-  const wsOps = XLSX.utils.aoa_to_sheet(opsAoA);
+  const wsOps = XLSX.utils.aoa_to_sheet(clampCells(opsAoA));
   styleSheet(wsOps, opsAoA, [14, 10, 36, 11, 48, 60, 15, 13, 11, 11, 12, 10, 12, 10, 30]);
   XLSX.utils.book_append_sheet(wb, wsOps, 'Operaciones');
 
@@ -1354,7 +1416,7 @@ function exportExcel() {
     ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'N° Operación', 'Descripción Operación', 'N° Paquete', 'Abreviatura', 'Frecuencia', 'Archivo'],
     ...pkgData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.pkgCode, r.pkgShort, r.frequency, r.filename])
   ];
-  const wsPkg = XLSX.utils.aoa_to_sheet(pkgAoA);
+  const wsPkg = XLSX.utils.aoa_to_sheet(clampCells(pkgAoA));
   styleSheet(wsPkg, pkgAoA, [14, 10, 36, 11, 48, 11, 12, 28, 30]);
   XLSX.utils.book_append_sheet(wb, wsPkg, 'Paquetes_Mtto');
 
@@ -1364,7 +1426,7 @@ function exportExcel() {
     ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'N° Operación', 'Descripción Operación', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', 'Archivo'],
     ...matData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.matCode, r.matDesc, numOrBlank(r.qty), r.unit, r.filename])
   ];
-  const wsMat = XLSX.utils.aoa_to_sheet(matAoA);
+  const wsMat = XLSX.utils.aoa_to_sheet(clampCells(matAoA));
   styleSheet(wsMat, matAoA, [14, 10, 36, 11, 42, 14, 48, 10, 8, 30]);
   XLSX.utils.book_append_sheet(wb, wsMat, 'Materiales');
 
@@ -1374,7 +1436,7 @@ function exportExcel() {
     ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Frecuencias / Paquetes', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', '# Mat.', '# Pasos', 'Archivo'],
     ...conData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.extText, r.freqs === '—' ? '' : r.freqs, r.workCenter, r.controlKey, numOrBlank(r.numPersons), numOrBlank(r.work), numOrBlank(r.duration), r.matCode === '—' ? '' : r.matCode, r.matDesc === '—' ? '' : r.matDesc, numOrBlank(r.qty), r.unit, r.numMats, r.numPasos, r.filename])
   ];
-  const wsCon = XLSX.utils.aoa_to_sheet(conAoA);
+  const wsCon = XLSX.utils.aoa_to_sheet(clampCells(conAoA));
   styleSheet(wsCon, conAoA, [14, 10, 36, 11, 40, 60, 34, 15, 13, 11, 11, 12, 14, 42, 10, 8, 8, 8, 30]);
   XLSX.utils.book_append_sheet(wb, wsCon, 'Consolidado');
 
@@ -1382,7 +1444,15 @@ function exportExcel() {
   const ts = new Date().toISOString().slice(0, 10);
   const fmts = [...new Set(S.files.map(f => f.format || 'IA10'))].sort().join('-');
   XLSX.writeFile(wb, `${fmts || 'IA10'}_HojasRuta_${ts}.xlsx`);
-  toast(`Excel exportado · ${fmtNum(opsData.length)} ops · ${fmtNum(pkgData.length)} paquetes · ${fmtNum(matData.length)} materiales`, 'n');
+  const resumen = `Excel exportado · ${fmtNum(opsData.length)} ops · ${fmtNum(pkgData.length)} paquetes · ${fmtNum(matData.length)} materiales`;
+  const avisos = [];
+  if (xlTruncCount > 0) {
+    avisos.push(`${fmtNum(xlTruncCount)} celda${xlTruncCount !== 1 ? 's' : ''} recortada${xlTruncCount !== 1 ? 's' : ''} por el límite de Excel (32.767 caracteres)`);
+  }
+  if (xlDroppedRows > 0) {
+    avisos.push(`${fmtNum(xlDroppedRows)} fila${xlDroppedRows !== 1 ? 's' : ''} omitida${xlDroppedRows !== 1 ? 's' : ''} por el límite de 1.048.576 filas por hoja`);
+  }
+  toast(avisos.length ? `${resumen} · ${avisos.join(' · ')}` : resumen, avisos.length ? 'w' : 'n');
 }
 
 function styleSheet(ws, data, colWidths) {
@@ -1435,8 +1505,9 @@ function styleSheet(ws, data, colWidths) {
   ws['!rows'] = (ws['!rows'] || []);
   ws['!rows'][0] = { hpt: 20 };
 
-  // Freeze first row
-  ws['!freeze'] = { xSplit: 0, ySplit: 1 };
+  // Nota: xlsx-js-style 1.2.0 no implementa paneles congelados (ni '!freeze'
+  // ni '!views' llegan al XML), así que no se fija la fila de encabezado.
+  // El autofiltro de arriba sí funciona y cubre la navegación de la tabla.
 }
 
 
@@ -1447,6 +1518,10 @@ async function processFiles(fileList) {
   if (!fileList || !fileList.length) return;
   const files = Array.from(fileList);
   showLoading(files[0].name);
+
+  const failed   = [];
+  const replaced = [];
+  let   ok = 0;
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
@@ -1462,9 +1537,12 @@ async function processFiles(fileList) {
       // Parse in next tick to allow UI update
       await new Promise(r => setTimeout(r, 0));
       const result = IA10Parser.parse(text, file.name);
-      S.addFile(result);
+      if (S.addFile(result)) replaced.push(file.name);
+      ok++;
     } catch (e) {
-      toast(`Error al procesar ${file.name}: ${e.message}`, 'e');
+      // Un archivo dañado no debe abortar la carga de los demás.
+      failed.push(file.name);
+      console.error('Error al procesar', file.name, e);
     }
   }
 
@@ -1474,7 +1552,14 @@ async function processFiles(fileList) {
   refresh();
 
   const st = S.stats;
-  toast(`${files.length} archivo${files.length > 1 ? 's' : ''} cargado${files.length > 1 ? 's' : ''} · ${fmtNum(st.plans)} hoja${st.plans !== 1 ? 's' : ''} de ruta · ${fmtNum(st.ops)} operaciones`);
+  // Un solo toast: los errores y reemplazos tienen prioridad sobre el resumen.
+  if (failed.length) {
+    toast(`${fmtNum(failed.length)} archivo${failed.length > 1 ? 's' : ''} no se pudo${failed.length > 1 ? 'ieron' : ''} leer: ${failed.join(', ')} · ${fmtNum(ok)} cargado${ok !== 1 ? 's' : ''} correctamente`, 'e');
+  } else if (replaced.length) {
+    toast(`${fmtNum(ok)} archivo${ok !== 1 ? 's' : ''} cargado${ok !== 1 ? 's' : ''} · ${fmtNum(st.plans)} hojas de ruta · se reemplazó ${replaced.join(', ')} (mismo nombre)`, 'w');
+  } else {
+    toast(`${fmtNum(ok)} archivo${ok !== 1 ? 's' : ''} cargado${ok !== 1 ? 's' : ''} · ${fmtNum(st.plans)} hoja${st.plans !== 1 ? 's' : ''} de ruta · ${fmtNum(st.ops)} operaciones`);
+  }
 }
 
 function readFileWin1252(file) {
@@ -1664,7 +1749,14 @@ document.getElementById('file-list').addEventListener('click', e => {
 // Controls
 document.getElementById('btn-excel').addEventListener('click', () => {
   if (!S.files.length) { toast('No hay datos para exportar', 'w'); return; }
-  exportExcel();
+  try {
+    exportExcel();
+  } catch (e) {
+    // Sin esto un fallo de xlsx sólo aparecía en la consola y el botón parecía
+    // no hacer nada (p. ej. falta de memoria en exportaciones muy grandes).
+    console.error('Error al exportar Excel', e);
+    toast(`No se pudo generar el Excel: ${e.message}`, 'e');
+  }
 });
 document.getElementById('btn-clear').addEventListener('click', () => {
   S.clear();
