@@ -758,7 +758,20 @@ const IA10Parser = (() => {
 
       // ── CABECERA DE HOJA DE RUTA ────────────────────
       // "Hoja de ruta CEDE-TR  4           PVO MOT COMBUST INTERNA MAK 16CM32C"
-      let m = raw.match(/^Hoja de ruta\s+(\S+)\s+(\d+)\s+(.*)$/);
+      //  col 0        col 13   col 22      col 34
+      // El listado es de ancho fijo. Se respetan esas columnas porque el
+      // contador no siempre es numérico (X1, Y2, AA…), la descripción puede
+      // venir vacía, y el código puede contener espacios ("FGAC -CS"), con lo
+      // que separar por espacios asignaría los campos mal.
+      let m = null;
+      if (/^Hoja de ruta\s/.test(raw)) {
+        const code = raw.slice(13, 22).trim();
+        const cnt  = raw.slice(22, 34).trim();
+        const desc = raw.slice(34).trim();
+        // Fallback por si el ancho de columna cambia en otra versión del reporte.
+        if (code && cnt) m = [raw, code, cnt, desc];
+        else m = raw.match(/^Hoja de ruta\s+(\S+)\s+(\S+)\s*(.*)$/);
+      }
       if (m) {
         finishIA17Op(currentOp);
         currentOp = null;
