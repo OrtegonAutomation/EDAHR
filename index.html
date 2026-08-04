@@ -746,6 +746,7 @@ const IA10Parser = (() => {
     const warns = [];
     let currentPlan = null;
     let currentOp   = null;
+    let lastMat     = null;
     // Indentación del bloque de texto largo, para des-indentar sin perder la
     // sangría relativa de los checklists.
     let textIndent  = null;
@@ -761,6 +762,7 @@ const IA10Parser = (() => {
       if (m) {
         finishIA17Op(currentOp);
         currentOp = null;
+        lastMat   = null;
         // El encabezado se repite en cada página del listado: si es la misma
         // hoja de ruta, se continúa la existente en vez de duplicarla.
         const existing = plans.find(p => p.code === m[1].trim() && p.counter === m[2].trim());
@@ -802,6 +804,7 @@ const IA10Parser = (() => {
           currentPlan.operations.push(currentOp);
         }
         textIndent = null;
+        lastMat    = null;
         continue;
       }
 
@@ -846,6 +849,43 @@ const IA10Parser = (() => {
       }
 
       if (!currentOp) continue;
+
+      // ── COMPONENTE / MATERIAL ───────────────────────
+      // "  Comp.mat.  7700008320           Filter.Oil.Mist.Detec,Mot.Comb"
+      //   seguido de tres líneas de detalle:
+      // "             Lista de materiales  00000159  1"
+      // "             Tipo de posición     L"
+      // "             Cantidad                  2,000   un"
+      m = raw.match(/^\s*Comp\.\s*mat\.\s+(\S+)\s+(.*)$/i);
+      if (m) {
+        lastMat = {
+          code:        m[1].trim(),
+          description: m[2].trim(),
+          qty:         '',
+          unit:        '',
+          bom:         '',   // lista de materiales
+          itemType:    ''    // tipo de posición
+        };
+        currentOp.materials.push(lastMat);
+        continue;
+      }
+
+      // Detalles del componente: sólo válidos junto a un Comp.mat. previo.
+      if (lastMat) {
+        m = raw.match(/^\s*Lista de materiales\s+(\S+)(?:\s+(\S+))?\s*$/i);
+        if (m) { lastMat.bom = m[1].trim(); continue; }
+
+        m = raw.match(/^\s*Tipo de posici[óo]n\s+(\S+)\s*$/i);
+        if (m) { lastMat.itemType = m[1].trim(); continue; }
+
+        m = raw.match(/^\s*Cantidad\s+([\d.,]+)\s*([A-Za-z]{1,5})?\s*$/i);
+        if (m) {
+          lastMat.qty  = m[1].trim();
+          lastMat.unit = (m[2] || '').toUpperCase();
+          lastMat = null;   // bloque completo
+          continue;
+        }
+      }
 
       // ── MANO DE OBRA (dentro de la operación) ───────
       m = raw.match(/^\s*Puesto de trabajo\s+(\S+)\s*$/i);
@@ -918,7 +958,7 @@ const S = (() => {
     })));
   }
   function _freqs(){ return _ops().flatMap(o => o.frequencies.map(f => ({ planCode: o.planCode, counter: o.counter, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, pkgCode: f.code, pkgShort: f.short || '', frequency: f.name, filename: o.filename }))); }
-  function _mats() { return _ops().flatMap(o => o.materials.map(m => ({ planCode: o.planCode, counter: o.counter, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, matCode: m.code, matDesc: m.description, qty: m.qty, unit: m.unit, filename: o.filename }))); }
+  function _mats() { return _ops().flatMap(o => o.materials.map(m => ({ planCode: o.planCode, counter: o.counter, planDesc: o.planDesc, opNum: o.number, opDesc: o.description, matCode: m.code, matDesc: m.description, qty: m.qty, unit: m.unit, bom: m.bom || '', itemType: m.itemType || '', filename: o.filename }))); }
 
   function rows(tab) {
     switch (tab) {
@@ -964,7 +1004,7 @@ const S = (() => {
         };
 
         if (!o.materials.length) {
-          return [{ ...base, matCode: '—', matDesc: '—', qty: '', unit: '' }];
+          return [{ ...base, matCode: '—', matDesc: '—', qty: '', unit: '', bom: '', itemType: '' }];
         }
 
         return o.materials.map(m => ({
@@ -972,7 +1012,9 @@ const S = (() => {
           matCode: m.code,
           matDesc: m.description,
           qty: m.qty,
-          unit: m.unit
+          unit: m.unit,
+          bom: m.bom || '',
+          itemType: m.itemType || ''
         }));
       });
       default: return [];
@@ -1110,6 +1152,8 @@ const COLS = {
     { key: 'matDesc',    label: 'Descripción Material', render: r => `<span class="dc text-wrap">${esc(r.matDesc)}</span>` },
     { key: 'qty',        label: 'Cantidad',  render: r => `<span class="qty-cell">${esc(r.qty) || '—'}</span>` },
     { key: 'unit',       label: 'Unidad',    render: r => `<span class="unit-cell">${esc(r.unit) || '—'}</span>` },
+    { key: 'bom',        label: 'Lista Mat.', render: r => dash(r.bom, `<span class="cc">${esc(r.bom)}</span>`) },
+    { key: 'itemType',   label: 'Tipo Pos.',  render: r => dash(r.itemType, `<span class="cc">${esc(r.itemType)}</span>`) },
     { key: 'filename',   label: 'Archivo', render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
   ],
   consolidado: [
@@ -1129,6 +1173,8 @@ const COLS = {
     { key: 'matDesc',   label: 'Descripción Material', render: r => `<span class="dc text-wrap">${esc(r.matDesc)}</span>` },
     { key: 'qty',       label: 'Cant.', render: r => `<span class="qty-cell">${esc(r.qty) || '—'}</span>` },
     { key: 'unit',      label: 'Und.', render: r => `<span class="unit-cell">${esc(r.unit) || '—'}</span>` },
+    { key: 'bom',       label: 'Lista Mat.', render: r => dash(r.bom, `<span class="cc">${esc(r.bom)}</span>`) },
+    { key: 'itemType',  label: 'Tipo Pos.',  render: r => dash(r.itemType, `<span class="cc">${esc(r.itemType)}</span>`) },
     { key: 'numMats',   label: '# Mat.', render: r => `<span class="cnt-badge ${r.numMats > 0 ? 'has-mats' : ''}">${r.numMats}</span>` },
     { key: 'numPasos',  label: '# Pasos', render: r => r.numPasos > 0 ? `<span class="cnt-badge has-steps">${r.numPasos}</span>` : `<span class="cnt-badge">0</span>` },
     { key: 'filename',  label: 'Archivo', render: r => `<span class="dc-dim">${esc(r.filename)}</span>` }
@@ -1423,21 +1469,21 @@ function exportExcel() {
   // ─ Sheet 4: Materiales ───────────────────────────────
   const matData = S.rows('materiales');
   const matAoA = [
-    ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'N° Operación', 'Descripción Operación', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', 'Archivo'],
-    ...matData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.matCode, r.matDesc, numOrBlank(r.qty), r.unit, r.filename])
+    ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'N° Operación', 'Descripción Operación', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', 'Lista de Materiales', 'Tipo de Posición', 'Archivo'],
+    ...matData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.matCode, r.matDesc, numOrBlank(r.qty), r.unit, r.bom, r.itemType, r.filename])
   ];
   const wsMat = XLSX.utils.aoa_to_sheet(clampCells(matAoA));
-  styleSheet(wsMat, matAoA, [14, 10, 36, 11, 42, 14, 48, 10, 8, 30]);
+  styleSheet(wsMat, matAoA, [14, 10, 36, 11, 42, 14, 48, 10, 8, 18, 14, 30]);
   XLSX.utils.book_append_sheet(wb, wsMat, 'Materiales');
 
   // ─ Sheet 5: Consolidado ──────────────────────────────
   const conData = S.rows('consolidado');
   const conAoA = [
-    ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Frecuencias / Paquetes', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', '# Mat.', '# Pasos', 'Archivo'],
-    ...conData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.extText, r.freqs === '—' ? '' : r.freqs, r.workCenter, r.controlKey, numOrBlank(r.numPersons), numOrBlank(r.work), numOrBlank(r.duration), r.matCode === '—' ? '' : r.matCode, r.matDesc === '—' ? '' : r.matDesc, numOrBlank(r.qty), r.unit, r.numMats, r.numPasos, r.filename])
+    ['Código Hoja de Ruta', 'Contador', 'Descripción Hoja de Ruta', 'N° Operación', 'Descripción Operación', 'Texto Largo', 'Frecuencias / Paquetes', 'Puesto de Trabajo', 'Clave de Control', 'N° Personas', 'Trabajo (H)', 'Duración (H)', 'Código Material', 'Descripción Material', 'Cantidad', 'Unidad', 'Lista de Materiales', 'Tipo de Posición', '# Mat.', '# Pasos', 'Archivo'],
+    ...conData.map(r => [r.planCode, r.counter, r.planDesc, r.opNum, r.opDesc, r.extText, r.freqs === '—' ? '' : r.freqs, r.workCenter, r.controlKey, numOrBlank(r.numPersons), numOrBlank(r.work), numOrBlank(r.duration), r.matCode === '—' ? '' : r.matCode, r.matDesc === '—' ? '' : r.matDesc, numOrBlank(r.qty), r.unit, r.bom, r.itemType, r.numMats, r.numPasos, r.filename])
   ];
   const wsCon = XLSX.utils.aoa_to_sheet(clampCells(conAoA));
-  styleSheet(wsCon, conAoA, [14, 10, 36, 11, 40, 60, 34, 15, 13, 11, 11, 12, 14, 42, 10, 8, 8, 8, 30]);
+  styleSheet(wsCon, conAoA, [14, 10, 36, 11, 40, 60, 34, 15, 13, 11, 11, 12, 14, 42, 10, 8, 18, 14, 8, 8, 30]);
   XLSX.utils.book_append_sheet(wb, wsCon, 'Consolidado');
 
   // Write file
@@ -1648,6 +1694,10 @@ ${'-'.repeat(110)}
              N\xfamero de personas    2
              Trabajo                  12,0  H
              Duraci\xf3n                  6,0  H
+  Comp.mat.  7700013467           Limpiador,Desalojador,Hum,PRAXIS,P-856,P
+             Lista de materiales  00000062  1
+             Tipo de posici\xf3n     L
+             Cantidad                         1,000   UN
   Paq.mant.  05  5H               750 Horas
  Operaci\xf3n   0090                 Inspeccionar Dispositivo Giro
              Inspeccionar Dispositivo Giro
@@ -1698,7 +1748,7 @@ async function startGuidedTour() {
       {
         element: document.getElementById('tabs'),
         title: '3 · Navegación por vistas',
-        intro: '<strong>Cinco vistas</strong> organizan los datos:<br>• <b>Cabecera</b> — Hojas de ruta con estrategia, utilización, status y centro<br>• <b>Operaciones</b> — Con texto largo, puesto de trabajo, clave de control, personas, trabajo y duración<br>• <b>Paquetes Mtto</b> — Frecuencias por operación (750 H, 1500 H…)<br>• <b>Materiales</b> — Componentes y cantidades (IA10)<br>• <b>Consolidado</b> — Vista unificada'
+        intro: '<strong>Cinco vistas</strong> organizan los datos:<br>• <b>Cabecera</b> — Hojas de ruta con estrategia, utilización, status y centro<br>• <b>Operaciones</b> — Con texto largo, puesto de trabajo, clave de control, personas, trabajo y duración<br>• <b>Paquetes Mtto</b> — Frecuencias por operación (750 H, 1500 H…)<br>• <b>Materiales</b> — Componentes y cantidades<br>• <b>Consolidado</b> — Vista unificada'
       },
       {
         element: document.getElementById('tsec'),
